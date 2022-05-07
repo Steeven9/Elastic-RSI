@@ -1,0 +1,38 @@
+{
+  "properties": {
+    "date": {
+      "type": "date",
+      "format": "yyyy-MM-dd HH:mm:ss"
+    },
+    "masked_ip": {
+      "type": "keyword"
+    },
+    "location": {
+      "type": "geo_point"
+    },
+    "req_type": {
+      "type": "keyword"
+    },
+    "path": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 256
+        }
+      }
+    },
+    "http_version": {
+      "type": "keyword"
+    },
+    "device_info": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword",
+          "ignore_above": 256
+        }
+      }
+    }
+  }
+}

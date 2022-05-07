@@ -43,3 +43,7 @@ target/
 # Node/React
 node_modules/
 build/
+
+
+*.csv
+*.ndjson
