@@ -28,14 +28,14 @@ const App = () => {
         <AppBar position="fixed" sx={{ zIndex: (th) => th.zIndex.drawer + 1 }} color="primary">
           <Toolbar>
             <Typography variant="h6" noWrap component="div">
-              react-boilerplate
+              Elastic-RSI
             </Typography>
           </Toolbar>
         </AppBar>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Toolbar />
           <SocketContext.Provider value={socket}>
-            <Typography>A template for modern web applications</Typography>
+            <Typography>RSI + Elastic = wow</Typography>
           </SocketContext.Provider>
         </Box>
       </Box>

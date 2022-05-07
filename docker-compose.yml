@@ -1,5 +1,6 @@
 version: "3.7"
 services:
+  # ELK stack
   es01:
     container_name: es01
     image: docker.elastic.co/elasticsearch/elasticsearch:8.2.0
@@ -26,7 +27,11 @@ services:
         soft: -1
         hard: -1
     healthcheck:
-      test: [ "CMD-SHELL", "curl -X GET -u elastic:${ELASTIC_PASSWORD} http://localhost:9200 || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -X GET -u elastic:${ELASTIC_PASSWORD} http://localhost:9200 || exit 1"
+        ]
       interval: 10s
       timeout: 10s
       retries: 120
@@ -64,6 +69,35 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+  # Web services
+  elastic-rsi-frontend:
+    container_name: elastic-rsi-frontend
+    restart: always
+    # builds: ./client
+    image: herrdermails/usi-elastic-rsi-client
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_HOSTNAME=elastic-rsi-backend
+      - REACT_APP_BACKEND_PORT=4000
+      - REACT_APP_PROD=true
+    links:
+      - elastic-rsi-backend
+    depends_on:
+      - elastic-rsi-backend
+  elastic-rsi-backend:
+    container_name: elastic-rsi-backend
+    restart: always
+    # builds: ./server
+    image: herrdermails/usi-elastic-rsi-server
+    ports:
+      - "4000:4000"
+    environment:
+      - REACT_APP_BACKEND_PORT=4000
+
+networks:
+  default:
+    name: elastic-rsi
 
 volumes:
   esdata01:

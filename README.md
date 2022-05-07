@@ -23,4 +23,15 @@ Both containers should show up as healthy after a couple minutes at maximum.
 
 ## Ingest the data
 
-TODO
+Assuming the data is in `.log` format and stored in the `data/` folder, first convert the data to the correct format:
+
+```bash
+cd data
+./convert_all.sh *.log
+```
+
+Then upload everything to ElasticSearch:
+
+```bash
+ELASTIC_URL=http://localhost:9200 ELASTIC_INDEX=rsi ./upload.sh ELASTIC_PASSWORD *.njdson
+```

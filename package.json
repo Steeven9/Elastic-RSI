@@ -2,7 +2,7 @@
   "name": "elastic-rsi",
   "version": "0.1.0",
   "description": "RSI web application",
-  "author": "soulsbros",
+  "author": "USI group 3",
   "license": "GPL-3.0-only",
   "devDependencies": {
     "@soulsbros/eslint-config": "^1.0.7",

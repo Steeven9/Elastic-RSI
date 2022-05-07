@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
-# Convert CSV to JSON documents
+# Converts a file to the correct format, ready for import.
+# Usage:
+# ./conversion.sh <file>
 
 jq --slurp --raw-input --raw-output \
   'split("\n") | .[0:-1] | map(split(" ")) |
