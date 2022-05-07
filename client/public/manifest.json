@@ -1,6 +1,6 @@
 {
-  "short_name": "react-boilerplate",
-  "name": "A template for modern web applications",
+  "short_name": "elastic-rsi",
+  "name": "RSI web application",
   "icons": [
     {
       "src": "img/favicon.ico",

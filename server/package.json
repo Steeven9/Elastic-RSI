@@ -1,7 +1,7 @@
 {
-  "name": "react-boilerplate-server",
+  "name": "elastic-rsi-server",
   "version": "0.1.0",
-  "description": "A template for modern web applications",
+  "description": "RSI web application server",
   "author": "soulsbros",
   "license": "GPL-3.0-only",
   "keywords": [],
