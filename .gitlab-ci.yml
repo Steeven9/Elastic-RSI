@@ -18,8 +18,3 @@ docker-build:
     - docker push "$herrdermails/usi-elastic-rsi-client${tag}"
     - docker build ./server -t "$herrdermails/usi-elastic-rsi-server${tag}" .
     - docker push "$herrdermails/usi-elastic-rsi-server${tag}"
-  # Run this job in a branch where a Dockerfile exists
-  rules:
-    - if: $CI_COMMIT_BRANCH
-      exists:
-        - Dockerfile
