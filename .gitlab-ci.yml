@@ -1,4 +1,6 @@
 build-server:
+  only:
+    - main
   image: docker:latest
   stage: build
   services:
@@ -18,6 +20,8 @@ build-server:
     - docker push "herrdermails/usi-elastic-rsi-server${tag}"
 
 build-client:
+  only:
+    - main
   image: docker:latest
   stage: build
   services:
