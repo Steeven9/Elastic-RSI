@@ -6,7 +6,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.2.0
     restart: always
     volumes:
-      - esdata01:/usr/share/elasticsearch/data
+      - ./esdata01:/usr/share/elasticsearch/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
@@ -42,7 +42,7 @@ services:
     image: docker.elastic.co/kibana/kibana:8.2.0
     restart: always
     volumes:
-      - kibanadata:/usr/share/kibana/data
+      - ./kibanadata:/usr/share/kibana/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
@@ -57,9 +57,9 @@ services:
       - server.ssl.enabled=false
       - elasticsearch.hosts=["http://localhost:9200"]
       # fill those with random stuff (min 32 characters)
-      - xpack.encryptedSavedObjects.encryptionKey=asasdasdaseoufghaskfihdsilhfsweiuo
-      - xpack.security.encryptionKey=asasdasdaseoufghaskfihdsilhfsweiuo
-      - xpack.reporting.encryptionKey=asasdasdaseoufghaskfihdsilhfsweiuo
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiuo
+      - XPACK_SECURITY_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiu22
+      - XPACK_REPORTING_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiuoas
     healthcheck:
       test:
         [
@@ -81,8 +81,6 @@ services:
       - REACT_APP_BACKEND_HOSTNAME=elastic-rsi-backend
       - REACT_APP_BACKEND_PORT=4000
       - REACT_APP_PROD=true
-    links:
-      - elastic-rsi-backend
     depends_on:
       - elastic-rsi-backend
   elastic-rsi-backend:
@@ -92,15 +90,20 @@ services:
     image: herrdermails/usi-elastic-rsi-server
     ports:
       - "4000:4000"
+    depends_on:
+      - es01
     environment:
       - REACT_APP_BACKEND_PORT=4000
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:4000/api/health | grep -q 'Ok elastic-rsi'"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 networks:
   default:
     name: elastic-rsi
-
-volumes:
-  esdata01:
-    driver: local
-  kibanadata:
-    driver: local
