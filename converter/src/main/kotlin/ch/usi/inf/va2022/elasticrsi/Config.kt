@@ -14,5 +14,7 @@ object Config {
     object Parser {
         val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE
         val TIME_FORMAT: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+
+        const val MAX_ASYNC_TASKS = 2048
     }
 }
