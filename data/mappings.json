@@ -4,11 +4,17 @@
       "type": "date",
       "format": "yyyy-MM-dd HH:mm:ss"
     },
-    "masked_ip": {
-      "type": "keyword"
+    "timezone": {
+      "type": "float"
     },
     "location": {
       "type": "geo_point"
+    },
+    "country": {
+      "type": "keyword"
+    },
+    "masked_ip": {
+      "type": "keyword"
     },
     "req_type": {
       "type": "keyword"

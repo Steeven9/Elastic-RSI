@@ -1,3 +1,4 @@
 *.json
-*.part.*
+*.part
+converter
 !mappings.json
