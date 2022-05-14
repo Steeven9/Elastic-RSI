@@ -34,12 +34,17 @@ class Ring implements Geometry {
     }
 
     @Override
+    public Admin1 getAdmin1(float lat, float lon) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public BoundingBox boundingBox() {
         return boundingBox;
     }
 
     @Override
-    public Stream<Geometry> flatten(Country country) {
+    public Stream<Geometry> flatten(Country country, Admin1 admin1) {
         throw new UnsupportedOperationException();
     }
 

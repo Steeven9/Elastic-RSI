@@ -45,8 +45,13 @@ suspend fun PartialDocument.augment(geocoder: ReverseGeocoder): Document = withC
     val dateTime = Config.Parser.DATE_FORMAT.format(date) +
             " " +
             Config.Parser.TIME_FORMAT.format(time)
-    val country = withContext(Dispatchers.IO) { geocoder.getCountry(location.lat, location.lon) }
-    val countryName = country.map { it.iso() }.orElse("unknown")
+    val country = geocoder.getCountry(location.lat, location.lon)
+    val countryName = country
+        .map { it.iso() }
+        .orElse("unknown")
+    val admin1 = geocoder.getAdmin1(location.lat,  location.lon)
+        .map { it.name() }
+        .orElse("unknown")
     val timeZone = country.flatMap { geocoder.getTimezone(it) }
         .map { it.gmtOffset() }
         .orElse(0f)
@@ -56,6 +61,7 @@ suspend fun PartialDocument.augment(geocoder: ReverseGeocoder): Document = withC
         dayOfWeek = date.dayOfWeek.value,
         timezone = timeZone,
         location = location,
+        admin1 = admin1,
         country = countryName,
         maskedIp = maskedIp,
         reqType = reqType,
@@ -75,6 +81,7 @@ fun Document.toNdjson(): String {
             "\"timezone\": \"$timezone\", " +
             "\"location\": {\"lat\": \"${location.lat}\", \"lon\": \"${location.lon}\"}, " +
             "\"country\": \"$country\", " +
+            "\"admin1\": \"$admin1\", " +
             "\"masked_ip\": \"$maskedIp\", " +
             "\"req_type\": \"$reqType\", " +
             "\"path\": \"$path\", " +
