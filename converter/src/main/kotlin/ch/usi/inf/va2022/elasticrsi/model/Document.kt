@@ -8,6 +8,7 @@ data class Document(
     // Geospatial information
     val location: GeoPoint,
     val country: Keyword,
+    val admin1: Keyword,
     // Request information
     val maskedIp: Keyword,
     val reqType: Keyword,

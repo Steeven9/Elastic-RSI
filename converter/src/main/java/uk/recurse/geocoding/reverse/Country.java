@@ -44,7 +44,7 @@ public class Country {
         return new BufferedReader(reader).lines()
                 .filter(line -> !line.startsWith("#"))
                 .map(line -> line.split("\t"))
-                .collect(toMap(row -> row[16], Country::new));
+                .collect(toMap(row -> row[1], Country::new));
     }
 
     /**

@@ -1,6 +1,5 @@
 package ch.usi.inf.va2022.elasticrsi
 
-import ch.usi.inf.va2022.elasticrsi.io.readLinesAsync
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -42,6 +41,13 @@ class Main : Callable<Int> {
     )
     var entriesPerFile = Config.Output.ENTRIES_PER_FILE
 
+    @Option(
+        names = ["-t", "--tasks"],
+        defaultValue = Config.Parser.MAX_ASYNC_TASKS.toString(),
+        description = ["Max async tasks for parsing the inputs"]
+    )
+    var maxTasks = Config.Parser.MAX_ASYNC_TASKS
+
     override fun call(): Int = runBlocking {
         val geocoder = ReverseGeocoder()
         Output(outputPath, entriesPerFile).use { output ->
@@ -51,7 +57,7 @@ class Main : Callable<Int> {
                 inputPaths.forEach { path ->
                     if (verbose) println("Reading ${path.fileName}...")
 
-                    readLinesAsync(path) { line ->
+                    readLinesAsync(path, maxTasks) { line ->
                         val partialDocument = parseLogLine(line)
                         if (partialDocument == null) {
                             if (verbose) {

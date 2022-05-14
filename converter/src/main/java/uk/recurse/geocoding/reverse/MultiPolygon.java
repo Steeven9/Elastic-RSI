@@ -1,10 +1,12 @@
 package uk.recurse.geocoding.reverse;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.stream.Stream;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 class MultiPolygon implements Geometry {
 
     private final Geometry[] geometries;
@@ -46,12 +48,25 @@ class MultiPolygon implements Geometry {
     }
 
     @Override
+    public Admin1 getAdmin1(float lat, float lon) {
+        if (boundingBox.contains(lat, lon)) {
+            for (Geometry geometry : geometries) {
+                Admin1 admin1 = geometry.getAdmin1(lat, lon);
+                if (admin1 != null) {
+                    return admin1;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
     public BoundingBox boundingBox() {
         return boundingBox;
     }
 
     @Override
-    public Stream<Geometry> flatten(Country country) {
-        return Stream.of(geometries).flatMap(geometry -> geometry.flatten(country));
+    public Stream<Geometry> flatten(Country country, Admin1 admin1) {
+        return Stream.of(geometries).flatMap(geometry -> geometry.flatten(country, admin1));
     }
 }

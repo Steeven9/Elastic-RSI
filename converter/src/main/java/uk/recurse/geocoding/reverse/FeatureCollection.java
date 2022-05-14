@@ -24,6 +24,10 @@ class FeatureCollection {
         return world.getCountry(lat, lon);
     }
 
+    Admin1 getAdmin1(float lat, float lon) {
+        return world.getAdmin1(lat, lon);
+    }
+
     Stream<Country> countries() {
         return Stream.of(countries);
     }

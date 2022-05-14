@@ -13,6 +13,9 @@
     "country": {
       "type": "keyword"
     },
+    "admin1": {
+      "type": "keyword"
+    },
     "masked_ip": {
       "type": "keyword"
     },

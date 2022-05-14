@@ -31,7 +31,7 @@ public class ReverseGeocoder {
         try (
                 InputStream countryInfo = cls.getResourceAsStream("/countryInfo.txt");
                 InputStream timezonesInfo = cls.getResourceAsStream("/timezones.txt");
-                InputStream shapes = cls.getResourceAsStream("/shapes_simplified_low.json")
+                InputStream shapes = cls.getResourceAsStream("/admin1.geojson")
         ) {
             featureCollection = load(countryInfo, shapes);
             assert timezonesInfo != null;
@@ -43,7 +43,7 @@ public class ReverseGeocoder {
 
     private FeatureCollection load(InputStream countryInfo, InputStream shapes) throws IOException {
         Map<String, Country> countriesMap = Country.load(new InputStreamReader(countryInfo, UTF_8));
-        InjectableValues countriesInjectables = new InjectableValues.Std().addValue(Map.class, countriesMap);
+        InjectableValues countriesInjectables = new InjectableValues.Std().addValue("countries", countriesMap);
         return new ObjectMapper()
                 .readerFor(FeatureCollection.class)
                 .with(countriesInjectables)
@@ -77,6 +77,17 @@ public class ReverseGeocoder {
      */
     public Optional<Timezone> getTimezone(Country country) {
         return Optional.ofNullable(timezones.get(country.iso()));
+    }
+
+    /**
+     * Converts a coordinate into an admin1.
+     *
+     * @param lat degrees latitude
+     * @param lon degrees longitude
+     * @return the admin1 at the given coordinate
+     */
+    public Optional<Admin1> getAdmin1(float lat, float lon) {
+        return Optional.ofNullable(featureCollection.getAdmin1(lat, lon));
     }
 
     /**

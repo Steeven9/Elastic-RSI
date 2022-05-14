@@ -12,19 +12,23 @@ import java.util.stream.Stream;
 class Feature {
 
     private final Country country;
+    private final Admin1 admin1;
     private final Geometry geometry;
-    private final Timezone timezone;
 
     @JsonCreator
     Feature(
-            @JacksonInject Map<String, Country> countries,
-            @JacksonInject Map<String, Timezone> timezones,
+            @JacksonInject("countries") Map<String, Country> countries,
             @JsonProperty("properties") Map<String, String> properties,
             @JsonProperty("geometry") Geometry geometry
     ) {
-        String id = properties.get("geoNameId");
-        country = countries.get(id);
-        timezone = timezones.get(country.iso());
+        String iso3 = properties.get("ISO3166-1-Alpha-3");
+        country = countries.get(iso3);
+        if (country == null) {
+            throw new IllegalArgumentException("Missing country " +
+                    properties.get("country") +
+                    '(' + iso3 + ')');
+        }
+        admin1 = new Admin1(country.iso(), properties.get("name"));
         this.geometry = geometry;
     }
 
@@ -32,11 +36,11 @@ class Feature {
         return country;
     }
 
-    Timezone timezone() {
-        return timezone;
+    Admin1 admin1() {
+        return admin1;
     }
 
     Stream<Geometry> geometries() {
-        return geometry.flatten(country);
+        return geometry.flatten(country, admin1);
     }
 }
