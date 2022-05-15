@@ -1,12 +1,12 @@
 version: "3.7"
 services:
   # ELK stack
-  es01:
-    container_name: es01
+  elasticsearch:
+    container_name: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.2.0
     restart: always
     volumes:
-      - esdata01:/usr/share/elasticsearch/data
+      - ./esdata01:/usr/share/elasticsearch/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
@@ -15,7 +15,7 @@ services:
       - node.name=server_name
       - bootstrap.memory_lock=true
       - network.host=0.0.0.0
-      - discovery.seed_hosts=["docker"] # hostname
+      - discovery.seed_hosts=["server_name"] # hostname
       - discovery.type=single-node
       - xpack.security.enrollment.enabled=true
       - xpack.security.http.ssl.enabled=false
@@ -35,31 +35,30 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+
   kibana:
     container_name: kibana
     depends_on:
-      - es01
+      - elasticsearch
     image: docker.elastic.co/kibana/kibana:8.2.0
     restart: always
     volumes:
-      - kibanadata:/usr/share/kibana/data
+      - ./kibanadata:/usr/share/kibana/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
       - 5601:5601
     environment:
       - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - server.host=0.0.0.0
-      - server.name=server_name
       - server.ssl.enabled=false
-      - elasticsearch.hosts=["http://localhost:9200"]
       # fill those with random stuff (min 32 characters)
-      - xpack.encryptedSavedObjects.encryptionKey=asasdasdaseoufghaskfihdsilhfsweiuo
-      - xpack.security.encryptionKey=asasdasdaseoufghaskfihdsilhfsweiuo
-      - xpack.reporting.encryptionKey=asasdasdaseoufghaskfihdsilhfsweiuo
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiuo
+      - XPACK_SECURITY_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiu22
+      - XPACK_REPORTING_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiuoas
     healthcheck:
       test:
         [
@@ -69,6 +68,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+
   # Web services
   elastic-rsi-frontend:
     container_name: elastic-rsi-frontend
@@ -81,10 +81,9 @@ services:
       - REACT_APP_BACKEND_HOSTNAME=elastic-rsi-backend
       - REACT_APP_BACKEND_PORT=4000
       - REACT_APP_PROD=true
-    links:
-      - elastic-rsi-backend
     depends_on:
       - elastic-rsi-backend
+
   elastic-rsi-backend:
     container_name: elastic-rsi-backend
     restart: always
@@ -92,15 +91,22 @@ services:
     image: herrdermails/usi-elastic-rsi-server
     ports:
       - "4000:4000"
+    depends_on:
+      - elasticsearch
     environment:
       - REACT_APP_BACKEND_PORT=4000
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_URL=http://elasticsearch:9200
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:4000/api/health | grep -q 'Ok elastic-rsi'"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 networks:
   default:
     name: elastic-rsi
-
-volumes:
-  esdata01:
-    driver: local
-  kibanadata:
-    driver: local

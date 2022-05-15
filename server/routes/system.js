@@ -5,7 +5,7 @@ const router = express.Router();
  * Restarts the server. Insecure.
  * Note: this only works in Docker with `restart: always`
  */
-router.get('/restart', (req, res) => {
+router.get('/restart', (_req, res) => {
   res.status(200).send('Restarting...');
   process.exit(1);
 });

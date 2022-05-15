@@ -48,3 +48,5 @@ build/
 *.csv
 *.ndjson
 *.log.gz
+kibanadata/
+esdata01/
