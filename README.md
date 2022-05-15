@@ -23,27 +23,11 @@ Both containers should show up as healthy after a couple minutes at maximum.
 
 ## Ingest the data
 
-Build the converter program
-
 ```bash
-cd converter
-./build.sh ../data/converter
-```
-
-Assuming the data is in `.log` format and stored in the `data/` folder, first convert the data to the correct format:
-
-```bash
-cd ../data
-./converter output.ndjson *.log
+./ingestData.sh <ELASTIC_PASSWORD> http://localhost:9200
 ```
 
 (Note: refer to the [converter README](./converter/README.md) for more information)
-
-Then upload everything to ElasticSearch:
-
-```bash
-ELASTIC_URL=http://localhost:9200 ELASTIC_INDEX=rsi ./upload.sh ELASTIC_PASSWORD output.njdson.*.part
-```
 
 ## Backend APIs
 

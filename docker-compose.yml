@@ -92,7 +92,7 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      - es01
+      - elasticsearch
     environment:
       - REACT_APP_BACKEND_PORT=4000
     healthcheck:
