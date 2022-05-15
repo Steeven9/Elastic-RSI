@@ -11,7 +11,7 @@ cd converter
 # Parse data
 cd ../data
 rm *.part
-./converter output.ndjson *.log
+./converter output.ndjson *.log -v
 
 # Upload to Elasticsearch
 ELASTIC_URL=$2 ELASTIC_INDEX=rsi ./upload.sh $1 output.njdson.*.part

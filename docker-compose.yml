@@ -95,6 +95,8 @@ services:
       - elasticsearch
     environment:
       - REACT_APP_BACKEND_PORT=4000
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_URL=http://elasticsearch:9200
     healthcheck:
       test:
         [
