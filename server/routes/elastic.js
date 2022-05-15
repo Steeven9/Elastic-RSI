@@ -10,6 +10,10 @@ if (!process.env.ELASTIC_API_KEY) {
   console.error("[ERROR] ELASTIC_API_KEY not set!");
   process.exit(1);
 }
+if (!process.env.BACKEND_API_TOKEN) {
+  console.error("[ERROR] BACKEND_API_TOKEN not set!");
+  process.exit(1);
+}
 
 const INDEX = "rsi";
 const client = new Client({
@@ -24,10 +28,7 @@ const validateAuth = (auth) => {
     return false;
   }
   const [type, token] = auth.split(" ");
-  if (type !== "Bearer" || token.length === 0 || token !== "ciaomamma") {
-    return false;
-  }
-  return true;
+  return !(type !== "Bearer" || token.length === 0 || token !== process.env.BACKEND_API_TOKEN);
 };
 
 // Returns the status of the cluster
