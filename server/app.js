@@ -4,12 +4,14 @@ const cors = require('cors');
 
 const serverPort = process.env.REACT_APP_BACKEND_PORT || 4000;
 const system = require('./routes/system');
+const elastic = require('./routes/elastic');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api/system', system);
-app.use('/api/health', (req, res) => res.send('Ok'));
+app.use('/api/elastic', elastic);
+app.use('/api/health', (req, res) => res.send('Ok elastic-rsi'));
 
 const server = http.createServer(app);
 

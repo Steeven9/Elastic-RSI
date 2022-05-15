@@ -33,7 +33,7 @@ cd converter
 Assuming the data is in `.log` format and stored in the `data/` folder, first convert the data to the correct format:
 
 ```bash
-cd data
+cd ../data
 ./converter output.ndjson *.log
 ```
 
@@ -44,3 +44,8 @@ Then upload everything to ElasticSearch:
 ```bash
 ELASTIC_URL=http://localhost:9200 ELASTIC_INDEX=rsi ./upload.sh ELASTIC_PASSWORD output.njdson.*.part
 ```
+
+## Backend APIs
+
+`GET api/elastic/all`
+etc.

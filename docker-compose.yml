@@ -1,8 +1,8 @@
 version: "3.7"
 services:
   # ELK stack
-  es01:
-    container_name: es01
+  elasticsearch:
+    container_name: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.2.0
     restart: always
     volumes:
@@ -15,7 +15,7 @@ services:
       - node.name=server_name
       - bootstrap.memory_lock=true
       - network.host=0.0.0.0
-      - discovery.seed_hosts=["docker"] # hostname
+      - discovery.seed_hosts=["server_name"] # hostname
       - discovery.type=single-node
       - xpack.security.enrollment.enabled=true
       - xpack.security.http.ssl.enabled=false
@@ -35,10 +35,11 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+
   kibana:
     container_name: kibana
     depends_on:
-      - es01
+      - elasticsearch
     image: docker.elastic.co/kibana/kibana:8.2.0
     restart: always
     volumes:
@@ -49,13 +50,11 @@ services:
       - 5601:5601
     environment:
       - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - server.host=0.0.0.0
-      - server.name=server_name
       - server.ssl.enabled=false
-      - elasticsearch.hosts=["http://localhost:9200"]
       # fill those with random stuff (min 32 characters)
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiuo
       - XPACK_SECURITY_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiu22
@@ -69,6 +68,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+
   # Web services
   elastic-rsi-frontend:
     container_name: elastic-rsi-frontend
@@ -83,6 +83,7 @@ services:
       - REACT_APP_PROD=true
     depends_on:
       - elastic-rsi-backend
+
   elastic-rsi-backend:
     container_name: elastic-rsi-backend
     restart: always
