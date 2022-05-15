@@ -27,7 +27,7 @@ fun parseLogLine(line: String): PartialDocument? {
     val reqType = entries[5]
     val path = entries[6]
     val httpVersion = entries[7]
-    val deviceInfo = entries.drop(7).joinToString(" ")
+    val deviceInfo = entries.drop(8).joinToString(" ")
 
     return PartialDocument(
         date = date,
