@@ -22,7 +22,7 @@
     "socket.io-client": "^4.5.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "env $(cat ../.env | xargs) react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src/ --ext .js --fix --max-warnings=0"
   },

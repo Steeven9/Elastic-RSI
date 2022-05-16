@@ -10,6 +10,10 @@ if (!process.env.ELASTIC_API_KEY) {
   console.error("[ERROR] ELASTIC_API_KEY not set!");
   process.exit(1);
 }
+if (!process.env.REACT_APP_BACKEND_API_TOKEN) {
+  console.error("[ERROR] REACT_APP_BACKEND_API_TOKEN not set!");
+  process.exit(1);
+}
 
 const INDEX = "rsi";
 const client = new Client({
@@ -24,10 +28,7 @@ const validateAuth = (auth) => {
     return false;
   }
   const [type, token] = auth.split(" ");
-  if (type !== "Bearer" || token.length === 0 || token !== "ciaomamma") {
-    return false;
-  }
-  return true;
+  return !(type !== "Bearer" || token.length === 0 || token !== process.env.REACT_APP_BACKEND_API_TOKEN);
 };
 
 // Returns the status of the cluster
@@ -64,7 +65,30 @@ router.get("/search", async (req, res) => {
         },
       }
     );
-    res.status(200).json(response);
+    res.status(200).json(response.hits.hits);
+  } catch (err) {
+    res.status(500).send(err.meta.body);
+  }
+});
+
+// Generic endpoint that accepts a query object
+router.get("/get", async (req, res) => {
+  // Validate "auth"
+  if (!validateAuth(req.headers.authorization)) {
+    res.status(401).send("Missing or malformed auth token");
+    return;
+  }
+
+  try {
+    const response = await client.search(
+      req.body,
+      {
+        headers: {
+          Authorization: `ApiKey ${process.env.ELASTIC_API_KEY}`,
+        },
+      }
+    );
+    res.status(200).json(response.hits.hits);
   } catch (err) {
     res.status(500).send(err.meta.body);
   }
@@ -82,6 +106,7 @@ router.get("/getAll", async (req, res) => {
     const response = await client.search(
       {
         index: INDEX,
+        size: 10000,
         query: {
           match_all: {},
         },
@@ -92,7 +117,7 @@ router.get("/getAll", async (req, res) => {
         },
       }
     );
-    res.status(200).json(response);
+    res.status(200).json(response.hits.hits);
   } catch (err) {
     res.status(500).send(err.meta.body);
   }

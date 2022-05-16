@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/system', system);
 app.use('/api/elastic', elastic);
-app.use('/api/health', (req, res) => res.send('Ok elastic-rsi'));
+app.use('/api/health', (_req, res) => res.send('Ok elastic-rsi'));
 
 const server = http.createServer(app);
 
