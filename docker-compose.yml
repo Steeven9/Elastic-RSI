@@ -95,7 +95,7 @@ services:
       - elasticsearch
     environment:
       - REACT_APP_BACKEND_PORT=4000
-      - BACKEND_API_TOKEN=${REACT_APP_BACKEND_API_TOKEN}
+      - REACT_APP_BACKEND_API_TOKEN=${REACT_APP_BACKEND_API_TOKEN}
       - ELASTIC_API_KEY=${ELASTIC_API_KEY}
       - ELASTIC_URL=http://elasticsearch:9200
     healthcheck:
