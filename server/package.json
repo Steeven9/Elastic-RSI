@@ -19,7 +19,7 @@
   "scripts": {
     "start": "forever app.js",
     "stop": "forever stop app.js",
-    "dev": "nodemon app.js",
+    "dev": "env $(cat ../.env | xargs) nodemon app.js",
     "lint": "eslint ./ --ext .js --fix --max-warnings=0"
   }
 }
