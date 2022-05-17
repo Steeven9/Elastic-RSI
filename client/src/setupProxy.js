@@ -5,17 +5,9 @@ let backendPort = process.env.REACT_APP_BACKEND_PORT || 4000;
 
 module.exports = (app) => {
   app.use(
-    '/socket.io',
-    createProxyMiddleware({
-      target: 'http://' + backendHostname + ':' + backendPort,
-      ws: true,
-    }),
-  );
-
-  app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://' + backendHostname + ':' + backendPort,
+      target: backendHostname + ':' + backendPort,
       changeOrigin: true,
     }),
   );
