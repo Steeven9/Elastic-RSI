@@ -15,7 +15,7 @@ const AppDrawer = () => {
   const drawerOpen = useSelector((st) => st.generalReducer.drawer);
   const setDrawerOpen = useCallback(
     (data) => {
-      dispatch(actions.setTab(data));
+      dispatch(actions.setDrawer(data));
     },
     [dispatch]
   );
@@ -38,7 +38,7 @@ const AppDrawer = () => {
   const setPage = (tab) => {
     setDrawerOpen(false);
     setTab(tab);
-  }
+  };
 
   const list = () => (
     <Box

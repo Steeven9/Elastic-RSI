@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const headers = {
-  Authorization: "Bearer ciaomamma",
+  Authorization: `Bearer ${process.env.REACT_APP_BACKEND_API_TOKEN}`,
   "Content-Type": "application/json",
 };
 
@@ -34,6 +34,7 @@ export const getAggs = async (query) => {
       { ...query },
       { headers: headers }
     );
+
     return res.data;
   } catch (err) {
     console.error(err);

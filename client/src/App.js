@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as actions from "./actions";
 import AppDrawer from "./components/AppDrawer";
 import ChartTabs from "./components/ChartTabs";
+import logoRsi from './img/logoRsi.png';
 import theme from "./Theme";
 
 const isProd = process.env.REACT_APP_PROD;
@@ -49,14 +50,15 @@ const App = () => {
             >
               <MenuIcon />
             </IconButton>
+            <img src={logoRsi} alt="logo" style={{width:'50px', margin: '0 10px'}} />
             <Typography variant="h6" noWrap component="div">
               Elastic-RSI
             </Typography>
           </Toolbar>
         </AppBar>
-        <div>
+        <div style={{ width: '100%', padding: '10px'}}>
           <AppDrawer />
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Box component="main">
             <Toolbar />
             <Typography>RSI + Elastic = wow</Typography>
             <ChartTabs />
