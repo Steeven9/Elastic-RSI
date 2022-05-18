@@ -51,16 +51,16 @@ const App = () => {
               <MenuIcon />
             </IconButton>
             <img src={logoRsi} alt="logo" style={{width:'50px', margin: '0 10px'}} />
-            <Typography variant="h6" noWrap component="div">
+            {/* <Typography variant="h6" noWrap component="div">
               Elastic-RSI
-            </Typography>
+            </Typography> */}
+            <Typography>RSI + Elastic = wow</Typography>
           </Toolbar>
         </AppBar>
         <div style={{ width: '100%', padding: '10px'}}>
           <AppDrawer />
           <Box component="main">
             <Toolbar />
-            <Typography>RSI + Elastic = wow</Typography>
             <ChartTabs />
           </Box>
         </div>
