@@ -41,8 +41,8 @@ router.get("/status", async (_req, res) => {
   res.send(helth);
 });
 
-// Generic endpoint that accepts a query object
-router.get("/aggs", async (req, res) => {
+// Accepts an aggregations filter and returns the buckets
+router.post("/aggs", async (req, res) => {
   // Validate "auth"
   if (!validateAuth(req.headers.authorization)) {
     res.status(401).send("Missing or malformed auth token");
@@ -69,7 +69,8 @@ router.get("/aggs", async (req, res) => {
 });
 
 // Generic endpoint that accepts a query object
-router.get("/get", async (req, res) => {
+// and returns everything
+router.post("/get", async (req, res) => {
   // Validate "auth"
   if (!validateAuth(req.headers.authorization)) {
     res.status(401).send("Missing or malformed auth token");
@@ -88,7 +89,7 @@ router.get("/get", async (req, res) => {
   }
 });
 
-// Returns all data
+// Returns all data (limited to 10'000 records)
 router.get("/getAll", async (req, res) => {
   // Validate "auth"
   if (!validateAuth(req.headers.authorization)) {
