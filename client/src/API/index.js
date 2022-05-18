@@ -7,7 +7,7 @@ const headers = {
 
 export const getAll = async () => {
   try {
-    const res = await axios.get(`/api/elastic/getAll`, { headers });
+    const res = await axios.get(`api/elastic/getAll`, { headers });
     return res.data;
   } catch (err) {
     console.error(err);
@@ -30,7 +30,7 @@ export const getWithQuery = async (query) => {
 export const getAggs = async (query) => {
   try {
     const res = await axios.post(
-      `https:elastic-rsi.soulsbros.ch/api/elastic/aggs`,
+      `api/elastic/aggs`,
       { ...query },
       { headers: headers }
     );
