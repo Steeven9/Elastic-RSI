@@ -91,7 +91,6 @@ const CountsPerDayOfWeek = () => {
       <ReactEcharts
         option={{
           grid: {
-            left: "0%",
             containLabel: true,
           },
           title: {
@@ -105,11 +104,13 @@ const CountsPerDayOfWeek = () => {
             data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
             name: "Days of the week",
             nameLocation: "middle",
+            nameGap: '30',
           },
           yAxis: {
             type: "value",
             name: "# of requests",
             nameLocation: "middle",
+            nameGap: '90',
           },
           series: [
             {
