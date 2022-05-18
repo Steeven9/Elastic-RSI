@@ -1,7 +1,8 @@
-import { Button } from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { getAggs } from "../../API";
+import DayTimesComparison from './DayTimesComparison';
+import Overview from "./Overview";
 
 const GetData = () => {
   const dispatch = useDispatch();
@@ -35,11 +36,13 @@ const GetData = () => {
 
   return (
     <>
-      <Button variant="outlined" sx={{ margin: 1 }} onClick={() => getQuery()}>
+      {/* <Button variant="outlined" sx={{ margin: 1 }} onClick={() => getQuery()}>
         {" "}
         Get Data
       </Button>
-      {data.length > 0 ? data.map((el) => <div key={el}>{el}</div>) : null}
+      {data.length > 0 ? data.map((el) => <div key={el}>{el}</div>) : null} */}
+       <Overview />
+       <DayTimesComparison />
     </>
   );
 };
