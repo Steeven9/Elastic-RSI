@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import CountsPerDayOfWeek from './charts/CountsPerDayOfWeek';
 import GetData from './charts/GetData';
 
 const ChartTabs = () => {
@@ -8,6 +9,8 @@ const ChartTabs = () => {
         switch(tab) {
             case 'home':
                 return <GetData />;
+            case 'dayOfWeek':
+                return <CountsPerDayOfWeek />;
             default:
                 return <GetData />;
         }

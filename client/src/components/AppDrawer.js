@@ -15,22 +15,41 @@ const AppDrawer = () => {
   const drawerOpen = useSelector((st) => st.generalReducer.drawer);
   const setDrawerOpen = useCallback(
     (data) => {
-      dispatch(actions.setDrawer(data));
+      dispatch(actions.setTab(data));
     },
     [dispatch]
   );
+
+  const setTab = useCallback(
+    (data) => {
+      dispatch(actions.setTab(data));
+    },
+    [dispatch]
+  );
+
+  const menuItems = [
+    { name: "Home", key: "home" },
+    {
+      name: "Days of Week",
+      key: "dayOfWeek",
+    },
+  ];
+
+  const setPage = (tab) => {
+    setDrawerOpen(false);
+    setTab(tab);
+  }
 
   const list = () => (
     <Box
       sx={{ width: 250, overflow: "auto" }}
       variant="permanent"
-      onClick={() => setDrawerOpen(false)}
     >
       <List>
-        {["BarCharts"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemText primary={text} />
+        {menuItems.map((item, index) => (
+          <ListItem key={item.key} disablePadding>
+            <ListItemButton onClick={() => setPage(item.key)}>
+              <ListItemText primary={item.name} />
             </ListItemButton>
           </ListItem>
         ))}

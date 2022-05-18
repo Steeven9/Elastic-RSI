@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const headers = {
-    "Authorization": `Bearer ${process.env.REACT_APP_BACKEND_API_TOKEN}`,
+  Authorization: "Bearer ciaomamma",
+  "Content-Type": "application/json",
 };
 
 export const getAll = async () => {
@@ -14,12 +15,12 @@ export const getAll = async () => {
 };
 
 export const getWithQuery = async (query) => {
-  const params = {
-    index: "rsi",
-    ...query,
-  };
   try {
-    const res = await axios.get(`/api/elastic/get`, { params, headers });
+    const res = await axios.post(
+      `api/elastic/get`,
+      { index: "rsi", ...query },
+      { headers: headers }
+    );
     return res.data;
   } catch (err) {
     console.error(err);
@@ -27,18 +28,12 @@ export const getWithQuery = async (query) => {
 };
 
 export const getAggs = async (query) => {
-  const params = {
-        ...query,
-  };
   try {
-    const res = await axios.get(
-      `/api/elastic/aggs`, {
-        method: "GET",
-        params: JSON.stringify(params),
-        headers: headers
-      }
+    const res = await axios.post(
+      `https:elastic-rsi.soulsbros.ch/api/elastic/aggs`,
+      { ...query },
+      { headers: headers }
     );
-    console.log(res);
     return res.data;
   } catch (err) {
     console.error(err);

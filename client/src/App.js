@@ -1,14 +1,14 @@
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
-  Box,
-  Button,
-  CssBaseline,
+  Box, CssBaseline,
+  IconButton,
   Toolbar,
   Typography
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import React, { useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as actions from "./actions";
 import AppDrawer from "./components/AppDrawer";
 import ChartTabs from "./components/ChartTabs";
@@ -18,6 +18,9 @@ const isProd = process.env.REACT_APP_PROD;
 
 const App = () => {
   const dispatch = useDispatch();
+
+
+  const drawerOpen = useSelector((st) => st.generalReducer.drawer);
 
   const setDrawerOpen = useCallback(
     (data) => {
@@ -36,12 +39,19 @@ const App = () => {
           color="primary"
         >
           <Toolbar>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={() => setDrawerOpen(!drawerOpen)}
+            >
+              <MenuIcon />
+            </IconButton>
             <Typography variant="h6" noWrap component="div">
               Elastic-RSI
             </Typography>
-            <Button onClick={() => setDrawerOpen(true)} color="secondary">
-              {"open"}
-            </Button>
           </Toolbar>
         </AppBar>
         <div>

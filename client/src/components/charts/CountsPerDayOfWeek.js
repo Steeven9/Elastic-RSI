@@ -1,9 +1,6 @@
-const CountsPerDayOfWeek = (data) => {
+const CountsPerDayOfWeek = (chartData) => {
   return (
     <ReactEcharts
-      onEvents={{
-        dataZoom: onDataZoom,
-      }}
       option={{
         grid: {
           left: "0%",
@@ -17,19 +14,14 @@ const CountsPerDayOfWeek = (data) => {
           trigger: "item",
         },
         xAxis: {
-          data: source.currentData.x.map((date) =>
-            formatDate(date, source.currentTimeLevel)
-          ),
+          data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         },
         yAxis: {},
         series: [
           {
             type: "bar",
             large: true,
-            data:
-              typeof source.currentData != "undefined"
-                ? source.currentData.y
-                : [],
+            data: chartData,
             barWidth: "90%",
             tooltip: {
               formatter: (params) =>
@@ -40,19 +32,7 @@ const CountsPerDayOfWeek = (data) => {
         ],
         toolbox: {
           right: 10,
-          feature: {
-            dataZoom: {
-              yAxisIndex: "none",
-            },
-          },
         },
-        dataZoom: [
-          {
-            type: "inside",
-            startValue: source.currentAxialIndices.start,
-            endValue: source.currentAxialIndices.end,
-          },
-        ],
       }}
     />
   );

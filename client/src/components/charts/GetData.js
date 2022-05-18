@@ -26,7 +26,7 @@ const GetData = () => {
     };
     
     const res = await getAggs(query);
-    setdata(res.hits.hits);
+    setdata(res.asd.buckets);
   }
 
   return (
