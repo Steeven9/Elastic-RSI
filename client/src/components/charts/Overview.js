@@ -124,7 +124,7 @@ function Overview() {
                         currentTimeLevel: 'hours',
                         currentAxialIndices: {
                             start: 0,
-                            end: dataPerHour.x.length
+                            end: dataPerHour.y.length
                         }
                     }
                     newSource.timeLevelRanges.days = dayRange
@@ -148,7 +148,7 @@ function Overview() {
                         currentTimeLevel: 'minutes',
                         currentAxialIndices: {
                             start: 0,
-                            end: dataPerMinute.x.length
+                            end: dataPerMinute.y.length
                         }
                     }
                     newSource.timeLevelRanges.hours = hourRange
@@ -186,7 +186,7 @@ function Overview() {
                         currentTimeLevel: 'hours',
                         currentAxialIndices: {
                             start: 0,
-                            end: dataPerHour.x.length
+                            end: dataPerHour.y.length
                         }
                     }
                     return newSource
@@ -204,7 +204,7 @@ function Overview() {
                     }}
                     option={{
                         grid: {
-                            left: '0%',
+                            left: '10%',
                             containLabel: true
                         },
                         title: {
@@ -215,9 +215,24 @@ function Overview() {
                             trigger: 'item'
                         },
                         xAxis: {
+                            name: mapTimeLevelToAxisLabel(source.currentTimeLevel),
+                            nameLocation: 'middle',
+                            nameGap: 40,
+                            nameTextStyle: {
+                                fontSize: 14,
+                                fontWeight: 'bolder'
+                            },
                             data: source.currentData.x.map(date => formatDate(date, source.currentTimeLevel))
                         },
-                        yAxis: {},
+                        yAxis: {
+                            name: 'Number requests',
+                            nameLocation: 'middle',
+                            nameGap: 80,
+                            nameTextStyle: {
+                                fontSize: 14,
+                                fontWeight: 'bolder'
+                            },
+                        },
                         series: [
                             {
                                 type: 'bar',
@@ -225,7 +240,7 @@ function Overview() {
                                 data: typeof source.currentData != 'undefined' ? source.currentData.y : [],
                                 barWidth: '90%',
                                 tooltip: {
-                                    formatter: (params) => `Number requests: ${params.value} </br>Day time: ${params.name}`,
+                                    formatter: (params) => `Number requests: ${params.value} </br>Time: ${params.name}`,
                                     extraCssText: 'box-shadow: 0 0 0 rgba(0, 0, 0, 0);'
                                 },
                             }
@@ -250,7 +265,21 @@ function Overview() {
 
 export default Overview
 
-// helper functions
+// visualition helper functions
+
+function mapTimeLevelToAxisLabel(timeLevel) {
+    if(timeLevel === 'days') {
+        return 'Days'
+    }
+    if(timeLevel === 'hours') {
+        return 'Hours'
+    }
+    if(timeLevel === 'minutes') {
+        return 'Minutes'
+    }
+}
+
+// time helper functions
 
 function formatDate(date, timeLevel) {
     if (timeLevel === 'days') {
@@ -337,7 +366,7 @@ async function selectMinutes(baseData, hourRange) {
     const startIndex = (startTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
     const endTime = new Date(Math.min(hourRange.end.getTime() + 60 * 60 * 1000, baseData.x.end.getTime()))
     const endIndex = startIndex + (endTime.getTime() - startTime.getTime()) / (60 * 1000)
-    const numberMinutes = ((endTime.getTime() - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getSeconds() * 1000)) / (60 * 1000) + 1
+    const numberMinutes = ((endTime.getTime() - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getSeconds() * 1000)) / (60 * 1000)
     let y = Array(numberMinutes).fill(0)
     for (let i = startIndex; i < endIndex; i++) {
         y[i-startIndex] += baseData.y[i]
@@ -352,8 +381,8 @@ async function drillUpToHours(baseData, dayRange) {
     const startTime = new Date(Math.max(baseData.x.start.getTime(), dayRange.start.getTime()))
     const startIndex = (startTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
     const endTime = new Date(Math.min(dayRange.end.getTime() + 24 * 60 * 60 * 1000, baseData.x.end.getTime()))
-    const endIndex = startIndex + (endTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
-    const numberHours = ((endTime.getTime() - endTime.getMinutes() * 60 * 1000 - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getMinutes() * 60 * 1000 - startTime.getSeconds() * 1000)) / (60 * 60 * 1000) + 1
+    const endIndex = startIndex + (endTime.getTime() - startTime.getTime()) / (60 * 1000)
+    const numberHours = ((endTime.getTime() - endTime.getMinutes() * 60 * 1000 - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getMinutes() * 60 * 1000 - startTime.getSeconds() * 1000)) / (60 * 60 * 1000)
     let y = Array(numberHours).fill(0)
     let minutesIndex = 0
     for (let i = startIndex; i < endIndex; i++) {
