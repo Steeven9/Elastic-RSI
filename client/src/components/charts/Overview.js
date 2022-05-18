@@ -14,54 +14,33 @@ function Overview() {
     baseDataReference.current = baseData
 
     useEffect(async () => {
-        const numberPages = 10
-        const pageSize = 10000
-        let result = {
-            x: {
-                start: undefined,
-                end: undefined
-            },
-            y: new Array()
-        }
-        let sort_index
-        for (let p = 0; p < numberPages; p++) {
-            const query = {
-                "size": pageSize,
-                "query": {
-                    "match_all": {}
-                },
-                "fields": [
-                    "date"
-                ],
-                "_source": false,
-                "sort": [
-                    {
-                        "date": {
-                            "order": "asc"
-                        }
+        const query = {
+            "size": 0,
+            "aggs": {
+                "by_minute": {
+                    "date_histogram": {
+                        "field": "date",
+                        "calendar_interval": "minute"
                     }
-                ],
-                ...(p > 0 && {search_after: [sort_index]})
-            }
-            const response = await getWithQuery(query)
-            const numberHits = response.hits.hits.length
-            const start = new Date(response.hits.hits[0].fields.date[0])
-            const end = new Date(response.hits.hits[numberHits - 1].fields.date[0])
-            const numberSeconds = (end.getTime() - start.getTime()) / 1000 + 1
-            let counter = new Array(numberSeconds).fill(0)
-            for (let i = 0; i < numberHits; i++) {
-                const date = new Date(response.hits.hits[i].fields.date[0])
-                const index = (date.getTime() - start.getTime()) / 1000
-                counter[index] += 1
-            }
-            if (p === 0) {
-                result.x.start = start
-            }
-            if (p === numberPages - 1) {
-                result.x.end = end
-            }
-            result.y = result.y.concat(counter)
-            sort_index = response.hits.hits[numberHits - 1].sort[0]
+                }
+            },
+            "_source": false,
+            "sort": [
+                {
+                    "date": {
+                        "order": "asc"
+                    }
+                }
+            ]
+        }
+        const response = await getWithQuery(query)
+        const numberMinutes = response.aggregations.by_minute.buckets.length
+        const result = {
+            x: {
+                start: new Date(response.aggregations.by_minute.buckets[0].key_as_string),
+                end: new Date(response.aggregations.by_minute.buckets[numberMinutes - 1].key_as_string)
+            },
+            y: response.aggregations.by_minute.buckets.map(bucket => bucket.doc_count)
         }
         setBaseData(result)
     }, [])
@@ -161,7 +140,7 @@ function Overview() {
                 start: start,
                 end: end
             }
-            drillUpToMinutes(baseDataReference.current, hourRange).then(dataPerMinute => {
+            selectMinutes(baseDataReference.current, hourRange).then(dataPerMinute => {
                 setSource(source => {
                     let newSource = {
                         ...source,
@@ -353,17 +332,15 @@ function getHourDifference(hourRange) {
 
 // drill functions
 
-async function drillUpToMinutes(baseData, hourRange) {
+async function selectMinutes(baseData, hourRange) {
     const startTime = new Date(Math.max(baseData.x.start.getTime(), hourRange.start.getTime()))
-    const startIndex = (startTime.getTime() - baseData.x.start.getTime()) / 1000
+    const startIndex = (startTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
     const endTime = new Date(Math.min(hourRange.end.getTime() + 60 * 60 * 1000, baseData.x.end.getTime()))
-    const endIndex = startIndex + (endTime.getTime() - startTime.getTime()) / 1000
+    const endIndex = startIndex + (endTime.getTime() - startTime.getTime()) / (60 * 1000)
     const numberMinutes = ((endTime.getTime() - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getSeconds() * 1000)) / (60 * 1000) + 1
     let y = Array(numberMinutes).fill(0)
-    let secondsIndex = 0
     for (let i = startIndex; i < endIndex; i++) {
-        y[Math.floor(secondsIndex / 60)] += baseData.y[i]
-        secondsIndex += 1
+        y[i-startIndex] += baseData.y[i]
     }
     return {
         x: Array(y.length).fill(0).map((_, i) => new Date(startTime.getTime() + i * 60 * 1000)),
@@ -373,15 +350,15 @@ async function drillUpToMinutes(baseData, hourRange) {
 
 async function drillUpToHours(baseData, dayRange) {
     const startTime = new Date(Math.max(baseData.x.start.getTime(), dayRange.start.getTime()))
-    const startIndex = (startTime.getTime() - baseData.x.start.getTime()) / 1000
+    const startIndex = (startTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
     const endTime = new Date(Math.min(dayRange.end.getTime() + 24 * 60 * 60 * 1000, baseData.x.end.getTime()))
-    const endIndex = startIndex + (endTime.getTime() - baseData.x.start.getTime()) / 1000
+    const endIndex = startIndex + (endTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
     const numberHours = ((endTime.getTime() - endTime.getMinutes() * 60 * 1000 - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getMinutes() * 60 * 1000 - startTime.getSeconds() * 1000)) / (60 * 60 * 1000) + 1
     let y = Array(numberHours).fill(0)
-    let secondsIndex = 0
+    let minutesIndex = 0
     for (let i = startIndex; i < endIndex; i++) {
-        y[Math.floor(secondsIndex / (60 * 60))] += baseData.y[i]
-        secondsIndex += 1
+        y[Math.floor(minutesIndex / 60)] += baseData.y[i]
+        minutesIndex += 1
     }
     return {
         x: Array(y.length).fill(0).map((_, i) => new Date(startTime.getTime() + i * 60 * 60 * 1000)),
@@ -393,10 +370,10 @@ async function drillUpToDays(baseData) {
     const dayRange = getDayRange(baseData.x.start, baseData.x.end)
     let numberDays = getDayDifference(dayRange) + 1
     let y = Array(numberDays).fill(0)
-    let secondsIndex = (baseData.x.start.getTime() - dayRange.start.getTime()) / 1000
+    let minutesIndex = (baseData.x.start.getTime() - dayRange.start.getTime()) / (60 * 1000)
     for (let i = 0; i < baseData.y.length; i++) {
-        y[Math.floor(secondsIndex / (24 * 60 * 60))] += baseData.y[i]
-        secondsIndex += 1
+        y[Math.floor(minutesIndex / (24 * 60))] += baseData.y[i]
+        minutesIndex += 1
     }
     return {
         x: Array(y.length).fill(0).map((_, i) => new Date(dayRange.start.getTime() + i * 24 * 60 * 60 * 1000)),
