@@ -204,7 +204,7 @@ function Overview() {
                     }}
                     option={{
                         grid: {
-                            left: '0%',
+                            left: '10%',
                             containLabel: true
                         },
                         title: {
@@ -215,9 +215,24 @@ function Overview() {
                             trigger: 'item'
                         },
                         xAxis: {
+                            name: mapTimeLevelToAxisLabel(source.currentTimeLevel),
+                            nameLocation: 'middle',
+                            nameGap: 40,
+                            nameTextStyle: {
+                                fontSize: 14,
+                                fontWeight: 'bolder'
+                            },
                             data: source.currentData.x.map(date => formatDate(date, source.currentTimeLevel))
                         },
-                        yAxis: {},
+                        yAxis: {
+                            name: 'Number requests',
+                            nameLocation: 'middle',
+                            nameGap: 80,
+                            nameTextStyle: {
+                                fontSize: 14,
+                                fontWeight: 'bolder'
+                            },
+                        },
                         series: [
                             {
                                 type: 'bar',
@@ -225,7 +240,7 @@ function Overview() {
                                 data: typeof source.currentData != 'undefined' ? source.currentData.y : [],
                                 barWidth: '90%',
                                 tooltip: {
-                                    formatter: (params) => `Number requests: ${params.value} </br>Day time: ${params.name}`,
+                                    formatter: (params) => `Number requests: ${params.value} </br>Time: ${params.name}`,
                                     extraCssText: 'box-shadow: 0 0 0 rgba(0, 0, 0, 0);'
                                 },
                             }
@@ -250,7 +265,21 @@ function Overview() {
 
 export default Overview
 
-// helper functions
+// visualition helper functions
+
+function mapTimeLevelToAxisLabel(timeLevel) {
+    if(timeLevel === 'days') {
+        return 'Days'
+    }
+    if(timeLevel === 'hours') {
+        return 'Hours'
+    }
+    if(timeLevel === 'minutes') {
+        return 'Minutes'
+    }
+}
+
+// time helper functions
 
 function formatDate(date, timeLevel) {
     if (timeLevel === 'days') {
