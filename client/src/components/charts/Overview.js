@@ -133,7 +133,7 @@ function Overview() {
                 })
             })
         }
-        if (isDrillingDownFromHoursToMinutes(sourceReference.current, indexRange)) {
+        else if (isDrillingDownFromHoursToMinutes(sourceReference.current, indexRange)) {
             const start = new Date(indexRange.start * 60 * 60 * 1000 + sourceReference.current.currentData.x[0].getTime())
             const end = new Date((indexRange.end - indexRange.start) * 60 * 60 * 1000 + start.getTime())
             const hourRange = {
@@ -157,7 +157,7 @@ function Overview() {
                 })
             })
         }
-        if (isDrillingUpFromHoursToDays(sourceReference.current, indexRange)) {
+        else if (isDrillingUpFromHoursToDays(sourceReference.current, indexRange)) {
             drillUpToDays(baseDataReference.current).then(dataPerDay => {
                 setSource(source => {
                     let newSource = {
@@ -173,7 +173,7 @@ function Overview() {
                 })
             })
         }
-        if (isDrillingUpFromMinutesToHours(sourceReference.current, indexRange)) {
+        else if (isDrillingUpFromMinutesToHours(sourceReference.current, indexRange)) {
             const dayRange = {
                 start: sourceReference.current.timeLevelRanges.days.start,
                 end: sourceReference.current.timeLevelRanges.days.end
@@ -191,6 +191,14 @@ function Overview() {
                     }
                     return newSource
                 })
+            })
+        }
+        else {
+            setSource(source => {
+                const newSource = {
+                    ...source
+                }
+                return newSource
             })
         }
     }, [])
