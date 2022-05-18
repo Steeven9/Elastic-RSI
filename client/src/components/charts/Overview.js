@@ -124,7 +124,7 @@ function Overview() {
                         currentTimeLevel: 'hours',
                         currentAxialIndices: {
                             start: 0,
-                            end: dataPerHour.x.length
+                            end: dataPerHour.y.length
                         }
                     }
                     newSource.timeLevelRanges.days = dayRange
@@ -148,7 +148,7 @@ function Overview() {
                         currentTimeLevel: 'minutes',
                         currentAxialIndices: {
                             start: 0,
-                            end: dataPerMinute.x.length
+                            end: dataPerMinute.y.length
                         }
                     }
                     newSource.timeLevelRanges.hours = hourRange
@@ -186,7 +186,7 @@ function Overview() {
                         currentTimeLevel: 'hours',
                         currentAxialIndices: {
                             start: 0,
-                            end: dataPerHour.x.length
+                            end: dataPerHour.y.length
                         }
                     }
                     return newSource
@@ -337,7 +337,7 @@ async function selectMinutes(baseData, hourRange) {
     const startIndex = (startTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
     const endTime = new Date(Math.min(hourRange.end.getTime() + 60 * 60 * 1000, baseData.x.end.getTime()))
     const endIndex = startIndex + (endTime.getTime() - startTime.getTime()) / (60 * 1000)
-    const numberMinutes = ((endTime.getTime() - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getSeconds() * 1000)) / (60 * 1000) + 1
+    const numberMinutes = ((endTime.getTime() - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getSeconds() * 1000)) / (60 * 1000)
     let y = Array(numberMinutes).fill(0)
     for (let i = startIndex; i < endIndex; i++) {
         y[i-startIndex] += baseData.y[i]
@@ -352,8 +352,8 @@ async function drillUpToHours(baseData, dayRange) {
     const startTime = new Date(Math.max(baseData.x.start.getTime(), dayRange.start.getTime()))
     const startIndex = (startTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
     const endTime = new Date(Math.min(dayRange.end.getTime() + 24 * 60 * 60 * 1000, baseData.x.end.getTime()))
-    const endIndex = startIndex + (endTime.getTime() - baseData.x.start.getTime()) / (60 * 1000)
-    const numberHours = ((endTime.getTime() - endTime.getMinutes() * 60 * 1000 - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getMinutes() * 60 * 1000 - startTime.getSeconds() * 1000)) / (60 * 60 * 1000) + 1
+    const endIndex = startIndex + (endTime.getTime() - startTime.getTime()) / (60 * 1000)
+    const numberHours = ((endTime.getTime() - endTime.getMinutes() * 60 * 1000 - endTime.getSeconds() * 1000) - (startTime.getTime() - startTime.getMinutes() * 60 * 1000 - startTime.getSeconds() * 1000)) / (60 * 60 * 1000)
     let y = Array(numberHours).fill(0)
     let minutesIndex = 0
     for (let i = startIndex; i < endIndex; i++) {
