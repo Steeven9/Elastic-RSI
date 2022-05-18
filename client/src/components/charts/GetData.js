@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getWithQuery } from '../API';
+import { getAggs } from '../../API';
 
 const GetData = () => {
   const dispatch = useDispatch();
@@ -10,8 +10,6 @@ const GetData = () => {
 
   const getQuery = async () => {
     const query = {
-      "size": 0,
-      "aggs": {
         "asd": {
           "filters": {
             "filters": {
@@ -25,11 +23,9 @@ const GetData = () => {
               }
           }
         }
-      }
     };
     
-    const res = await getWithQuery(query);
-
+    const res = await getAggs(query);
     setdata(res.hits.hits);
   }
 
