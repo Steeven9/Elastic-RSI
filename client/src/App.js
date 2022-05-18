@@ -14,8 +14,6 @@ import AppDrawer from "./components/AppDrawer";
 import ChartTabs from "./components/ChartTabs";
 import logoRsi from './img/logoRsi.png';
 import theme from "./Theme";
-import Overview from './components/charts/Overview'
-import DayTimesComparison from './components/charts/DayTimesComparison'
 
 const isProd = process.env.REACT_APP_PROD;
 
@@ -64,8 +62,6 @@ const App = () => {
           <Box component="main">
             <Toolbar />
             <ChartTabs />
-            <Overview />
-            <DayTimesComparison />
           </Box>
         </div>
       </Box>
