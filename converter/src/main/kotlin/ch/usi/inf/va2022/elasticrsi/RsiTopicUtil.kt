@@ -3,6 +3,7 @@ package ch.usi.inf.va2022.elasticrsi
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.Authenticator
@@ -114,6 +115,11 @@ object RsiTopicUtil {
             JSONObject(sb.toString())
         } catch (e: IOException) {
             System.err.println("Failed to fetch information about id $id")
+            e.printStackTrace()
+            JSONObject()
+        } catch (e: JSONException) {
+            System.err.println("Invalid JSON response for id $id")
+            System.err.println(sb.toString())
             JSONObject()
         }
     }
