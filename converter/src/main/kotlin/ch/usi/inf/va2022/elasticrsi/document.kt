@@ -55,6 +55,7 @@ suspend fun PartialDocument.augment(geocoder: ReverseGeocoder): Document = withC
     val timeZone = country.flatMap { geocoder.getTimezone(it) }
         .map { it.gmtOffset() }
         .orElse(0f)
+    val topics = RsiTopicUtil.buildTopicsFromPath(path)
 
     Document(
         dateTime = dateTime,
@@ -68,6 +69,7 @@ suspend fun PartialDocument.augment(geocoder: ReverseGeocoder): Document = withC
         path = path,
         httpVersion = httpVersion,
         deviceInfo = deviceInfo,
+        topics = topics,
     )
 }
 
@@ -86,6 +88,7 @@ fun Document.toNdjson(): String {
             "\"req_type\": \"$reqType\", " +
             "\"path\": \"$path\", " +
             "\"http_version\": \"$httpVersion\", " +
-            "\"device_info\": \"$deviceInfo\" " +
+            "\"device_info\": \"$deviceInfo\", " +
+            "\"topics\": [\"${topics.joinToString("\", \"")}\"] " +
             "}\n"
 }

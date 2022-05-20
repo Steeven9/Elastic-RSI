@@ -15,4 +15,6 @@ data class Document(
     val path: String,
     val httpVersion: String,
     val deviceInfo: String,
+    // Topics
+    val topics: List<String>,
 )
