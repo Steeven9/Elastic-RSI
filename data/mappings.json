@@ -42,6 +42,9 @@
           "ignore_above": 256
         }
       }
+    },
+    "topics": {
+      "type": "keyword"
     }
   }
 }

@@ -1,43 +1,69 @@
-import { AppBar, Box, CssBaseline, Toolbar, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-import SocketContext from './SocketContext';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from './Theme';
+import MenuIcon from '@mui/icons-material/Menu';
+import {
+  AppBar,
+  Box, CssBaseline,
+  IconButton,
+  Toolbar,
+  Typography
+} from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import * as actions from "./actions";
+import AppDrawer from "./components/AppDrawer";
+import ChartTabs from "./components/ChartTabs";
+import logoRsi from './img/logoRsi.png';
+import theme from "./Theme";
 
 const isProd = process.env.REACT_APP_PROD;
 
 const App = () => {
-  const [socket, setSocket] = useState(undefined);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    console.info('Connecting to ' + (isProd ? 'prod' : 'dev'));
-    const newSocket = isProd
-      ? io.connect({ path: '/socket.io' })
-      : io.connect(`http://${window.location.hostname}:4000`, {
-          path: '/socket.io',
-        });
-    setSocket(newSocket);
-    return () => newSocket.close();
-  }, [setSocket]);
+
+  const drawerOpen = useSelector((st) => st.generalReducer.drawer);
+
+  const setDrawerOpen = useCallback(
+    (data) => {
+      dispatch(actions.setDrawer(data));
+    },
+    [dispatch]
+  );
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ display: 'flex' }}>
-        <AppBar position="fixed" sx={{ zIndex: (th) => th.zIndex.drawer + 1 }} color="primary">
+      <Box sx={{ display: "flex" }}>
+        <AppBar
+          position="fixed"
+          sx={{ zIndex: (th) => th.zIndex.drawer + 1 }}
+          color="primary"
+        >
           <Toolbar>
-            <Typography variant="h6" noWrap component="div">
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={() => setDrawerOpen(!drawerOpen)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <img src={logoRsi} alt="logo" style={{width:'50px', margin: '0 10px'}} />
+            {/* <Typography variant="h6" noWrap component="div">
               Elastic-RSI
-            </Typography>
+            </Typography> */}
+            <Typography>RSI + Elastic = wow</Typography>
           </Toolbar>
         </AppBar>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar />
-          <SocketContext.Provider value={socket}>
-            <Typography>RSI + Elastic = wow</Typography>
-          </SocketContext.Provider>
-        </Box>
+        <div style={{ width: '100%', padding: '10px'}}>
+          <AppDrawer />
+          <Box component="main">
+            <Toolbar />
+            <ChartTabs />
+          </Box>
+        </div>
       </Box>
     </ThemeProvider>
   );
