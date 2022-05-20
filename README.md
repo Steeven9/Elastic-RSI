@@ -11,6 +11,8 @@ ELASTIC_PASSWORD=somestuff
 KIBANA_PASSWORD=somestuff
 REACT_APP_BACKEND_API_TOKEN=somestuff
 ELASTIC_API_KEY=
+RSI_API_USER=   # get from RSI
+RSI_API_PWD=    # get from RSI
 ```
 
 Bring up the stack with:

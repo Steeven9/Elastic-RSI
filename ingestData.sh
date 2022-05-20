@@ -13,5 +13,8 @@ cd ../data
 rm *.part
 ./converter output.ndjson *.log -v
 
+# Delete previous index
+curl -u elastic:$1 -X DELETE $2/rsi
+
 # Upload to Elasticsearch
 ELASTIC_URL=$2 ELASTIC_INDEX=rsi ./upload.sh $1 output.njdson.*.part
