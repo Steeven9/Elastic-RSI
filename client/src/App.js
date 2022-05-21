@@ -5,7 +5,7 @@ import {
   CssBaseline,
   IconButton,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import React, { useCallback } from "react";
@@ -14,14 +14,12 @@ import * as actions from "./actions";
 import AppDrawer from "./components/AppDrawer";
 import ChartTabs from "./components/ChartTabs";
 import GeneralActions from "./components/GeneralActions";
-import logoRsi from "./img/logoRsi.png";
 import theme from "./Theme";
 
 const isProd = process.env.REACT_APP_PROD;
 
 const App = () => {
   const dispatch = useDispatch();
-
   const drawerOpen = useSelector((st) => st.generalReducer.drawer);
 
   const setDrawerOpen = useCallback(
@@ -52,6 +50,12 @@ const App = () => {
               <MenuIcon />
             </IconButton>
             <img
+<<<<<<< HEAD
+              src={"/img/logoRsi_clean.png"}
+              alt="logo"
+              style={{ width: "50px", margin: "0 10px" }}
+            />
+=======
               src={logoRsi}
               alt="logo"
               style={{ width: "50px", margin: "0 10px" }}
@@ -59,6 +63,7 @@ const App = () => {
             {/* <Typography variant="h6" noWrap component="div">
               Elastic-RSI
             </Typography> */}
+>>>>>>> main
             <Typography>RSI + Elastic = wow</Typography>
           </Toolbar>
         </AppBar>

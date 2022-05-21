@@ -1,142 +1,141 @@
-import React from 'react'
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Fragment } from 'react'
-import ReactEcharts from "echarts-for-react"
-import { getWithQuery } from '../../API'
+import React from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Fragment } from "react";
+import ReactEcharts from "echarts-for-react";
+import { getWithQuery } from "../../API";
 
 function mapHourToDayTime(hour) {
-    if (6 < hour && hour <= 12) {
-        return 'morning'
-    }
-    else if (12 < hour && hour <= 18) {
-        return 'afternoon'
-    }
-    else if (18 < hour && hour <= 24) {
-        return 'evening'
-    }
-    else {
-        return 'night'
-    }
+  if (6 < hour && hour <= 12) {
+    return "morning";
+  } else if (12 < hour && hour <= 18) {
+    return "afternoon";
+  } else if (18 < hour && hour <= 24) {
+    return "evening";
+  } else {
+    return "night";
+  }
 }
 
 function DayTimesComparison() {
+  const [data, setData] = useState(undefined);
 
-    const [data, setData] = useState(undefined)
-
-    useEffect(() => {
-        const query = {
-            "query": {
-                "bool": {
-                    "must": [
-                        {
-                            "match": {
-                                "country": "CH"
-                            }
-                        }
-                    ]
-                }
+  useEffect(() => {
+    const query = {
+      query: {
+        bool: {
+          must: [
+            {
+              match: {
+                country: "CH",
+              },
             },
-            "aggs": {
-                "by_day": {
-                    "date_histogram": {
-                        "field": "date",
-                        "calendar_interval": "day",
-                        "keyed": true,
-                        "format": "yyyy-MM-dd"
-                    },
-                    "aggs": {
-                        "by_hour": {
-                            "date_histogram": {
-                                "field": "date",
-                                "calendar_interval": "hour"
-                            }
-                        }
-                    }
-                }
+          ],
+        },
+      },
+      aggs: {
+        by_day: {
+          date_histogram: {
+            field: "date",
+            calendar_interval: "day",
+            keyed: true,
+            format: "yyyy-MM-dd",
+          },
+          aggs: {
+            by_hour: {
+              date_histogram: {
+                field: "date",
+                calendar_interval: "hour",
+              },
             },
-            "_source": false
+          },
+        },
+      },
+      _source: false,
+    };
+    getWithQuery(query).then((response) => {
+      response.aggregations.by_day.buckets;
+      let result = {
+        morning: 0,
+        afternoon: 0,
+        evening: 0,
+        night: 0,
+      };
+      let dayCounter = 0;
+      for (const dayKey in response.aggregations.by_day.buckets) {
+        for (const hourObject of response.aggregations.by_day.buckets[dayKey]
+          .by_hour.buckets) {
+          let hour = hourObject.key_as_string.split(" ")[1].split(":")[0];
+          hour = parseInt(hour);
+          result[mapHourToDayTime(hour)] += hourObject.doc_count;
         }
-        getWithQuery(query).then(response => {
-            response.aggregations.by_day.buckets
-            let result = {
-                morning: 0,
-                afternoon: 0,
-                evening: 0,
-                night: 0
-            }
-            let dayCounter = 0
-            for (const dayKey in response.aggregations.by_day.buckets) {
-                for (const hourObject of response.aggregations.by_day.buckets[dayKey].by_hour.buckets) {
-                    let hour = hourObject.key_as_string.split(' ')[1].split(':')[0]
-                    hour = parseInt(hour)
-                    result[mapHourToDayTime(hour)] += hourObject.doc_count
-                }
-                dayCounter += 1
-            }
-            for (const dayTimeKey in result) {
-                result[dayTimeKey] = result[dayTimeKey] / dayCounter
-            }
-            result = Object.keys(result).map(key => {
-                return {
-                    x: key,
-                    y: result[key]
-                }
-            })
-            setData(result)
-        })
-    }, [])
+        dayCounter += 1;
+      }
+      for (const dayTimeKey in result) {
+        result[dayTimeKey] = result[dayTimeKey] / dayCounter;
+      }
+      result = Object.keys(result).map((key) => {
+        return {
+          x: key,
+          y: result[key],
+        };
+      });
+      setData(result);
+    });
+  }, []);
 
-    return (
-        <Fragment>
-            {(typeof data !== 'undefined') &&
-                <ReactEcharts option={{
-                    grid: {
-                        left: '10%',
-                        containLabel: true
-                    },
-                    title: {
-                        text: 'Average number of requests per day time in Switzerland',
-                        left: 'center'
-                    },
-                    tooltip: {
-                        trigger: 'item'
-                    },
-                    xAxis: {
-                        name: 'Day time',
-                        nameLocation: 'middle',
-                        nameGap: 30,
-                        nameTextStyle: {
-                            fontSize: 14,
-                            fontWeight: 'bolder'
-                        },
-                        type: 'category',
-                        data: data.map(e => e.x)
-                    },
-                    yAxis: {
-                        type: 'value',
-                        name: 'Number requests',
-                        nameLocation: 'middle',
-                        nameGap: 70,
-                        nameTextStyle: {
-                            fontSize: 14,
-                            fontWeight: 'bolder'
-                        }
-                    },
-                    series: [
-                        {
-                            type: 'bar',
-                            tooltip: {
-                                formatter: (params) => `Number requests: ${params.value} </br>Day time: ${params.name}`,
-                                extraCssText: 'box-shadow: 0 0 0 rgba(0, 0, 0, 0);'
-                            },
-                            data: data.map(e => e.y)
-                      }
-                    ]
-                }} />
-
-            }
-        </Fragment>
-    )
+  return (
+    <Fragment>
+      {typeof data !== "undefined" && (
+        <ReactEcharts
+          option={{
+            grid: {
+              left: "10%",
+              containLabel: true,
+            },
+            title: {
+              text: "Average number of requests per day time in Switzerland",
+              left: "center",
+            },
+            tooltip: {
+              trigger: "item",
+            },
+            xAxis: {
+              name: "Day time",
+              nameLocation: "middle",
+              nameGap: 30,
+              nameTextStyle: {
+                fontSize: 14,
+                fontWeight: "bolder",
+              },
+              type: "category",
+              data: data.map((e) => e.x),
+            },
+            yAxis: {
+              type: "value",
+              name: "Number requests",
+              nameLocation: "middle",
+              nameGap: 70,
+              nameTextStyle: {
+                fontSize: 14,
+                fontWeight: "bolder",
+              },
+            },
+            series: [
+              {
+                type: "bar",
+                tooltip: {
+                  formatter: (params) =>
+                    `Number requests: ${params.value} </br>Day time: ${params.name}`,
+                  extraCssText: "box-shadow: 0 0 0 rgba(0, 0, 0, 0);",
+                },
+                data: data.map((e) => e.y),
+              },
+            ],
+          }}
+        />
+      )}
+    </Fragment>
+  );
 }
 
-export default DayTimesComparison
+export default DayTimesComparison;
