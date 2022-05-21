@@ -64,7 +64,7 @@ router.post("/aggs", async (req, res) => {
     );
     res.status(200).json(response.aggregations);
   } catch (err) {
-    res.status(500).send(err.meta.body);
+    res.status(500).send(err);
   }
 });
 
@@ -85,7 +85,7 @@ router.post("/get", async (req, res) => {
     });
     res.status(200).json(response);
   } catch (err) {
-    res.status(500).send(err.meta.body);
+    res.status(500).send(err);
   }
 });
 
@@ -113,7 +113,7 @@ router.get("/getAll", async (req, res) => {
     );
     res.status(200).json(response.hits.hits);
   } catch (err) {
-    res.status(500).send(err.meta.body);
+    res.status(500).send(err);
   }
 });
 
@@ -187,6 +187,31 @@ router.get("/getAllDataUNSAFE", async (req, res) => {
     console.log("[getAll] " + err);
   } finally {
     res.status(200).json(results);
+  }
+});
+
+// Returns a count given a query (on the _count endpoint)
+router.post("/count", async (req, res) => {
+  // Validate "auth"
+  if (!validateAuth(req.headers.authorization)) {
+    return res.status(401).send("Missing or malformed auth token");
+  }
+
+  try {
+    const response = await client.count(
+      {
+        ...req.body,
+        index: INDEX,
+      },
+      {
+        headers: {
+          Authorization: `ApiKey ${process.env.ELASTIC_API_KEY}`,
+        },
+      }
+    );
+    res.status(200).json(response.count);
+  } catch (err) {
+    res.status(500).send(err);
   }
 });
 
