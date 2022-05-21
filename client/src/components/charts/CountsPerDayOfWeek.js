@@ -1,15 +1,11 @@
-import { FormControlLabel } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
 import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { getAggs } from "../../API";
 
 const CountsPerDayOfWeek = () => {
   const [chartData, setdata] = useState([]);
-  const [filter, setFilter] = useState("global");
+  const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
 
   const getQuery = async () => {
     let query = {
@@ -27,10 +23,10 @@ const CountsPerDayOfWeek = () => {
         },
       },
     };
-    if (filter == "ch") {
+    if (countryFilter !== "Global") {
       query = {
         daysOfWeek: {
-          filter: { term: { country: "CH" } },
+          filter: { term: { country: countryFilter } },
           aggs: {
             daysOfWeek: {
               filters: {
@@ -52,7 +48,7 @@ const CountsPerDayOfWeek = () => {
 
     const res = await getAggs(query);
     let resAgg = {};
-    if (filter == "ch") {
+    if (countryFilter !== "Global") {
       resAgg = res.daysOfWeek.daysOfWeek.buckets;
     } else {
       resAgg = res.daysOfWeek.buckets;
@@ -65,29 +61,10 @@ const CountsPerDayOfWeek = () => {
 
   useEffect(() => {
     getQuery();
-  }, [filter]);
-
-  const handleChange = (ev) => {
-    console.log(ev.target.value);
-    setFilter(ev.target.value);
-  };
+  }, [countryFilter]);
 
   return chartData.length > 0 ? (
     <div>
-      <FormControl>
-        <FormLabel id="demo-controlled-radio-buttons-group">
-          Filter by Global or CH
-        </FormLabel>
-        <RadioGroup
-          aria-labelledby="demo-controlled-radio-buttons-group"
-          name="controlled-radio-buttons-group"
-          value={filter}
-          onChange={handleChange}
-        >
-          <FormControlLabel value="global" control={<Radio />} label="Global" />
-          <FormControlLabel value="ch" control={<Radio />} label="CH" />
-        </RadioGroup>
-      </FormControl>
       <ReactEcharts
         option={{
           grid: {

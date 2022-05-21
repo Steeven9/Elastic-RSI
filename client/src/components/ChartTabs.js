@@ -9,8 +9,10 @@ const ChartTabs = () => {
         switch(tab) {
             case 'home':
                 return <GetData />;
-            case 'dayOfWeek':
+            case 'byWeek':
                 return <CountsPerDayOfWeek />;
+            case 'byDay':
+                return <GetData />
             default:
                 return <GetData />;
         }
