@@ -1,7 +1,8 @@
 import { useSelector } from "react-redux";
-import CountsPerDayOfWeek from "./charts/CountsPerDayOfWeek";
 import GetData from "./charts/GetData";
-import HomeMaps from "./charts/HomeMaps";
+import ByWeek from "./views/ByWeek";
+import GeneralViews from "./views/GeneralViews";
+import Home from "./views/Home";
 
 const ChartTabs = () => {
   const tab = useSelector((st) => st.generalReducer.tab);
@@ -9,9 +10,11 @@ const ChartTabs = () => {
   const renderTabs = () => {
     switch (tab) {
       case "home":
-        return <HomeMaps />;
+        return <Home />;
+      case "general":
+        return <GeneralViews />;
       case "byWeek":
-        return <CountsPerDayOfWeek />;
+        return <ByWeek />;
       case "byDay":
         return <GetData />;
       default:
