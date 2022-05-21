@@ -1,10 +1,11 @@
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
-  Box, CssBaseline,
+  Box,
+  CssBaseline,
   IconButton,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import React, { useCallback } from "react";
@@ -12,15 +13,12 @@ import { useDispatch, useSelector } from "react-redux";
 import * as actions from "./actions";
 import AppDrawer from "./components/AppDrawer";
 import ChartTabs from "./components/ChartTabs";
-import logoRsi from './img/logoRsi.png';
 import theme from "./Theme";
 
 const isProd = process.env.REACT_APP_PROD;
 
 const App = () => {
   const dispatch = useDispatch();
-
-
   const drawerOpen = useSelector((st) => st.generalReducer.drawer);
 
   const setDrawerOpen = useCallback(
@@ -50,14 +48,15 @@ const App = () => {
             >
               <MenuIcon />
             </IconButton>
-            <img src={logoRsi} alt="logo" style={{width:'50px', margin: '0 10px'}} />
-            {/* <Typography variant="h6" noWrap component="div">
-              Elastic-RSI
-            </Typography> */}
+            <img
+              src={"/img/logoRsi_clean.png"}
+              alt="logo"
+              style={{ width: "50px", margin: "0 10px" }}
+            />
             <Typography>RSI + Elastic = wow</Typography>
           </Toolbar>
         </AppBar>
-        <div style={{ width: '100%', padding: '10px'}}>
+        <div style={{ width: "100%", padding: "10px" }}>
           <AppDrawer />
           <Box component="main">
             <Toolbar />

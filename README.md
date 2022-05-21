@@ -16,6 +16,13 @@ RSI_API_PWD=    # get from RSI
 ELASTIC_URL=http://localhost:9200
 ```
 
+If you want to use our remote backend, add those as well:
+
+```bash
+REACT_APP_BACKEND_HOSTNAME=https://elastic-rsi.soulsbros.ch
+REACT_APP_BACKEND_PORT=443
+```
+
 Bring up the stack with:
 
 ```bash
