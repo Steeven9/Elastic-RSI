@@ -7,6 +7,7 @@ data class Document(
     val timezone: Float,
     // Geospatial information
     val location: GeoPoint,
+    val continent: Keyword,
     val country: Keyword,
     val admin1: Keyword,
     // Request information

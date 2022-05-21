@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { getAggs } from "../../API";
-import DayTimesComparison from './DayTimesComparison';
+import DayTimesComparison from "./DayTimesComparison";
 import Overview from "./Overview";
 
 const GetData = () => {
@@ -41,8 +41,8 @@ const GetData = () => {
         Get Data
       </Button>
       {data.length > 0 ? data.map((el) => <div key={el}>{el}</div>) : null} */}
-       <Overview />
-       <DayTimesComparison />
+      <Overview />
+      <DayTimesComparison />
     </>
   );
 };

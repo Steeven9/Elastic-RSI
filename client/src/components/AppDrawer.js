@@ -30,8 +30,12 @@ const AppDrawer = () => {
   const menuItems = [
     { name: "Home", key: "home" },
     {
-      name: "Days of Week",
-      key: "dayOfWeek",
+      name: "By Week",
+      key: "byWeek",
+    },
+    {
+      name: "By Day",
+      key: "byDay",
     },
   ];
 
@@ -41,10 +45,7 @@ const AppDrawer = () => {
   };
 
   const list = () => (
-    <Box
-      sx={{ width: 250, overflow: "auto" }}
-      variant="permanent"
-    >
+    <Box sx={{ width: 250, overflow: "auto" }} variant="permanent">
       <List>
         {menuItems.map((item, index) => (
           <ListItem key={item.key} disablePadding>
