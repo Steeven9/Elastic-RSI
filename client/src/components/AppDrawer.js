@@ -30,9 +30,13 @@ const AppDrawer = () => {
   const menuItems = [
     { name: "Home", key: "home" },
     {
-      name: "Days of Week",
-      key: "dayOfWeek",
+      name: "By Week",
+      key: "byWeek",
     },
+    {
+      name: "By Day",
+      key: "byDay"
+    }
   ];
 
   const setPage = (tab) => {

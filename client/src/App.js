@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as actions from "./actions";
 import AppDrawer from "./components/AppDrawer";
 import ChartTabs from "./components/ChartTabs";
+import GeneralActions from './components/GeneralActions';
 import logoRsi from './img/logoRsi.png';
 import theme from "./Theme";
 
@@ -61,6 +62,9 @@ const App = () => {
           <AppDrawer />
           <Box component="main">
             <Toolbar />
+            <div>
+              <GeneralActions />
+            </div>
             <ChartTabs />
           </Box>
         </div>

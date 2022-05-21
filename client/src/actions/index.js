@@ -11,3 +11,13 @@ export const setTab = (payload) => ({
     type: 'SET_TAB',
     payload,
 });
+
+export const setCountryFilter = (payload) => ({
+    type: 'SET_COUNTRY_FILTER',
+    payload,
+});
+
+export const setRegionFilter = (payload) => ({
+    type: 'SET_REGION_FILTER',
+    payload,
+});
