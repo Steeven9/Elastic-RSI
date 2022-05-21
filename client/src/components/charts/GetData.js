@@ -36,11 +36,6 @@ const GetData = () => {
 
   return (
     <>
-      {/* <Button variant="outlined" sx={{ margin: 1 }} onClick={() => getQuery()}>
-        {" "}
-        Get Data
-      </Button>
-      {data.length > 0 ? data.map((el) => <div key={el}>{el}</div>) : null} */}
       <Overview />
       <DayTimesComparison />
     </>

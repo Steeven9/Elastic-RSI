@@ -7,7 +7,7 @@ import {
   Geographies,
   Geography,
   Graticule,
-  Sphere
+  Sphere,
 } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
 import { getAggs } from "../../API";
