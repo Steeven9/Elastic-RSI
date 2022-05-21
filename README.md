@@ -11,6 +11,9 @@ ELASTIC_PASSWORD=somestuff
 KIBANA_PASSWORD=somestuff
 REACT_APP_BACKEND_API_TOKEN=somestuff
 ELASTIC_API_KEY=
+RSI_API_USER=   # get from RSI
+RSI_API_PWD=    # get from RSI
+ELASTIC_URL=http://localhost:9200
 ```
 
 Bring up the stack with:
@@ -44,7 +47,7 @@ on the index and add it to the `.env` file under `ELASTIC_API_KEY`.
 ## Ingest the data
 
 ```bash
-./ingestData.sh ${ELASTIC_PASSWORD} http://localhost:9200
+./ingestData.sh rsi
 ```
 
 (Note: refer to the [converter README](./converter/README.md) for more information)
