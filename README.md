@@ -68,6 +68,9 @@ npm start
 
 ## Backend APIs
 
+`GET api/health`\
+Returns "Ok elastic-rsi". Used for pod monitoring
+
 `GET api/elastic/status`\
 Returns the status of the cluster
 
@@ -83,4 +86,8 @@ Returns the result for the given query, as if used in the dev tools
 
 `GET api/elastic/getAll`\
 Auth: bearer token\
-Returns all data
+Returns a sample of 10'000 documents
+
+`GET api/elastic/getAllDataUNSAFE`\
+Auth: bearer token\
+Returns all data. WARNING: SLOW! WILL HANG FOR LITERAL MINUTES

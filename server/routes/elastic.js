@@ -89,12 +89,11 @@ router.post("/get", async (req, res) => {
   }
 });
 
-// Returns all data (limited to 10'000 records)
+// Returns a sample of 10'000 records
 router.get("/getAll", async (req, res) => {
   // Validate "auth"
   if (!validateAuth(req.headers.authorization)) {
-    res.status(401).send("Missing or malformed auth token");
-    return;
+    return res.status(401).send("Missing or malformed auth token");
   }
 
   try {
@@ -115,6 +114,79 @@ router.get("/getAll", async (req, res) => {
     res.status(200).json(response.hits.hits);
   } catch (err) {
     res.status(500).send(err.meta.body);
+  }
+});
+
+// Returns all data (SLOW! WILL HANG FOR MINUTES)
+router.get("/getAllDataUNSAFE", async (req, res) => {
+  // Validate "auth"
+  if (!validateAuth(req.headers.authorization)) {
+    return res.status(401).send("Missing or malformed auth token");
+  }
+
+  let pitId;
+
+  // Get PIT ID
+  try {
+    const response = await client.openPointInTime(
+      {
+        index: INDEX,
+        keep_alive: "10m",
+      },
+      {
+        headers: {
+          Authorization: `ApiKey ${process.env.ELASTIC_API_KEY}`,
+        },
+      }
+    );
+    pitId = response.id;
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+
+  let results = [];
+  const params = {
+    size: 10000,
+    query: {
+      match_all: {},
+    },
+    pit: {
+      id: pitId,
+      keep_alive: "10m",
+    },
+    sort: [{ date: { order: "asc" } }],
+  };
+
+  try {
+    // Fetch first batch of responses
+    let response = await client.search(params, {
+      headers: {
+        Authorization: `ApiKey ${process.env.ELASTIC_API_KEY}`,
+      },
+    });
+    results = results.concat(response.hits.hits);
+
+    // Paginate results - we let it gracefully fail on the last one
+    while (true) {
+      let searchAfter = response.hits.hits[response.hits.hits.length - 1].sort;
+      response = await client.search(
+        {
+          ...params,
+          search_after: searchAfter,
+        },
+        {
+          headers: {
+            Authorization: `ApiKey ${process.env.ELASTIC_API_KEY}`,
+          },
+        }
+      );
+      results = results.concat(response.hits.hits);
+    }
+  } catch (err) {
+    console.log("[getAll] " + err);
+  } finally {
+    res.status(200).json(results);
   }
 });
 
