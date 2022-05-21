@@ -90,7 +90,7 @@ const TopicsView = () => {
             {
               name: "Treemap of topics",
               type: "treemap",
-              visibleMin: 1000,
+              visibleMin: 100,
               label: {
                 show: true,
                 formatter: "{b}",
