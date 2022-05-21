@@ -50,20 +50,10 @@ const App = () => {
               <MenuIcon />
             </IconButton>
             <img
-<<<<<<< HEAD
               src={"/img/logoRsi_clean.png"}
               alt="logo"
               style={{ width: "50px", margin: "0 10px" }}
             />
-=======
-              src={logoRsi}
-              alt="logo"
-              style={{ width: "50px", margin: "0 10px" }}
-            />
-            {/* <Typography variant="h6" noWrap component="div">
-              Elastic-RSI
-            </Typography> */}
->>>>>>> main
             <Typography>RSI + Elastic = wow</Typography>
           </Toolbar>
         </AppBar>
