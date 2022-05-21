@@ -35,8 +35,8 @@ const AppDrawer = () => {
     },
     {
       name: "By Day",
-      key: "byDay"
-    }
+      key: "byDay",
+    },
   ];
 
   const setPage = (tab) => {
@@ -45,10 +45,7 @@ const AppDrawer = () => {
   };
 
   const list = () => (
-    <Box
-      sx={{ width: 250, overflow: "auto" }}
-      variant="permanent"
-    >
+    <Box sx={{ width: 250, overflow: "auto" }} variant="permanent">
       <List>
         {menuItems.map((item, index) => (
           <ListItem key={item.key} disablePadding>

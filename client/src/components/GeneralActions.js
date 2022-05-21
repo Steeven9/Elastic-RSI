@@ -1,10 +1,10 @@
 import {
-	FormControl,
-	InputLabel,
-	ListSubheader,
-	MenuItem,
-	Select,
-	Typography
+  FormControl,
+  InputLabel,
+  ListSubheader,
+  MenuItem,
+  Select,
+  Typography
 } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
@@ -116,7 +116,7 @@ const GeneralActions = () => {
             value={countryFilter}
             label={countryFilter}
             onChange={handleChangeCountry}
-						sx={{minWidth: 200}}
+            sx={{ minWidth: 200 }}
           >
             {selectItems.map((item) => (
               <MenuItem key={item} value={item}>
@@ -138,7 +138,7 @@ const GeneralActions = () => {
             value={regionFilter}
             label={regionFilter}
             onChange={handleChangeRegion}
-						sx={{minWidth: 200}}
+            sx={{ minWidth: 200 }}
           >
             <MenuItem value={"All"}>All</MenuItem>
             {regions.map((region) => (
