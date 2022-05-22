@@ -7,6 +7,8 @@ import kotlinx.coroutines.withContext
 import ch.usi.inf.va2022.elasticrsi.model.Document
 import ch.usi.inf.va2022.elasticrsi.model.GeoPoint
 import ch.usi.inf.va2022.elasticrsi.model.PartialDocument
+import ch.usi.inf.va2022.elasticrsi.useragent.UserAgentNode
+import ch.usi.inf.va2022.elasticrsi.useragent.UserAgentParser
 import uk.recurse.geocoding.reverse.ReverseGeocoder
 import java.time.LocalDate
 import java.time.LocalTime
@@ -52,13 +54,14 @@ suspend fun PartialDocument.augment(geocoder: ReverseGeocoder): Document = withC
     val countryName = country
         .map { it.iso() }
         .orElse("unknown")
-    val admin1 = geocoder.getAdmin1(location.lat,  location.lon)
+    val admin1 = geocoder.getAdmin1(location.lat, location.lon)
         .map { it.name() }
         .orElse("unknown")
     val timeZone = country.flatMap { geocoder.getTimezone(it) }
         .map { it.gmtOffset() }
         .orElse(0f)
     val topics = RsiTopicUtil.buildTopicsFromPath(path)
+    val userAgent = UserAgentParser()(deviceInfo)
 
     Document(
         dateTime = dateTime,
@@ -72,7 +75,7 @@ suspend fun PartialDocument.augment(geocoder: ReverseGeocoder): Document = withC
         reqType = reqType,
         path = path,
         httpVersion = httpVersion,
-        deviceInfo = deviceInfo,
+        userAgent = userAgent,
         topics = topics,
     )
 }
@@ -93,7 +96,22 @@ fun Document.toNdjson(): String {
             "\"req_type\": \"$reqType\", " +
             "\"path\": \"$path\", " +
             "\"http_version\": \"$httpVersion\", " +
-            "\"device_info\": \"$deviceInfo\", " +
+            "\"user_agent\": ${userAgent.keywords()}, " +
             "\"topics\": [\"${topics.joinToString("\", \"")}\"] " +
             "}\n"
+}
+
+private fun UserAgentNode.UserAgent?.keywords(): String {
+    return '[' +
+            (this?.programs?.joinToString(", ") { program ->
+                val sb = StringBuilder()
+                sb.append("\"${program.product.name.name} ${program.product.version.segment.joinToString(".")}\"")
+                if (program.comment != null && program.comment.details.isNotEmpty()) {
+                    sb.append(", \"")
+                    sb.append(program.comment.details.joinToString("\", \"") { it.detail })
+                    sb.append("\"")
+                }
+                sb.toString()
+            } ?: "") +
+            ']'
 }
