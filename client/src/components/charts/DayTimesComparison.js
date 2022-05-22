@@ -85,7 +85,7 @@ function DayTimesComparison() {
 
   return (
     <Fragment>
-      {typeof data !== "undefined" && (
+      {data ? (
         <ReactEcharts
           option={{
             grid: {
@@ -133,6 +133,8 @@ function DayTimesComparison() {
             ],
           }}
         />
+      ) : (
+        <div style={{ textAlign: "center" }}>Loading...</div>
       )}
     </Fragment>
   );
