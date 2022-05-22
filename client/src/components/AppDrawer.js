@@ -29,6 +29,7 @@ const AppDrawer = () => {
 
   const menuItems = [
     { name: "Home", key: "home" },
+    { name: "General Views", key: "general" },
     {
       name: "By Week",
       key: "byWeek",
