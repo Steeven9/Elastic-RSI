@@ -52,8 +52,6 @@ object RsiTopicUtil {
                         infoJson.getJSONObject("article").getString("contentType"),
                     )
                 } else {
-                    System.err.println("Missing \"article\" field in retrieved json for $path")
-                    System.err.println(infoJson.toString(2))
                     listOf()
                 }
             } else {
@@ -115,7 +113,6 @@ object RsiTopicUtil {
             JSONObject(sb.toString())
         } catch (e: IOException) {
             System.err.println("Failed to fetch information about id $id")
-            e.printStackTrace()
             JSONObject()
         } catch (e: JSONException) {
             System.err.println("Invalid JSON response for id $id")
