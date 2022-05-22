@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Fragment } from "react";
 import ReactEcharts from "echarts-for-react";
 import { getWithQuery } from "../../API";
@@ -20,6 +20,7 @@ function DayTimesComparison() {
   const [data, setData] = useState(undefined);
 
   useEffect(() => {
+    // TO DO: integrate selection
     const query = {
       query: {
         bool: {

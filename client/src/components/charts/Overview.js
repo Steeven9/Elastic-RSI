@@ -13,6 +13,7 @@ function Overview() {
   baseDataReference.current = baseData;
 
   useEffect(async () => {
+    // TO DO: integrate selection
     const query = {
       size: 0,
       aggs: {
