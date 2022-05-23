@@ -1,6 +1,5 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Fragment } from "react";
 import ReactEcharts from "echarts-for-react";
 import { getWithQuery } from "../../API";
 import { useSelector } from "react-redux";
@@ -14,17 +13,17 @@ function dateToHourIndex(date) {
     return date.getHours()
 }
 
-function DayComparison() {
+function WeekDayComparison() {
     const [option, setOption] = useState(undefined);
     const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
-    const regionFilter = useSelector((st) => st.generalReducer.countryFilter);
+    const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
-    useEffect(() => {
+    useEffect(async () => {
         const isCountrySelected = countryFilter !== 'Global'
         const isRegionSelected = regionFilter !== 'All'
         const query = {
             size: 0,
-            ...(isCountrySelected || isRegionSelected && {
+            ...(isCountrySelected || isRegionSelected ? {
                 query: {
                     bool: {
                         must: [
@@ -41,24 +40,24 @@ function DayComparison() {
                         ],
                     },
                 }
-            }),
+            }: {}),
             aggs: {
                 by_hour: {
                     date_histogram: {
-                        field: date,
-                        calendar_interval: hour
+                        field: "date",
+                        calendar_interval: "hour"
                     }
                 }
             },
             sort: [
                 {
                     date: {
-                        order: asc
+                        order: "asc"
                     }
                 }
             ]
         }
-        const response = await getWithQuery(query);
+        const response = await getWithQuery(query)
         let values = new Array(7 * 24).fill(0)
         const numberHours = response.aggregations.by_hour.buckets.length
         const startDate = new Date(response.aggregations.by_hour.buckets[0].key_as_string)
@@ -75,11 +74,86 @@ function DayComparison() {
             values[i] = values[i] / hourCounter[i]
         }
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        const option = {
+            grid: {
+                left: '10%',
+                right: '10%',
+                containLabel: true
+            },
+            title: {
+                text: 'Weekday comparison',
+                left: 'center'
+            },
+            legend: {
+                orient: 'vertical',
+                right: '0%',
+                top: 'middle'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            xAxis: {
+                name: 'Day time',
+                nameLocation: "middle",
+                nameGap: 30,
+                nameTextStyle: {
+                    fontSize: 14,
+                    fontWeight: 'bolder'
+                },
+                axisLabel: {
+                    interval: 2
+                },
+                type: 'category',
+                data: new Array(24).fill(0).map((_, i) => `${new String(i).padStart(2, '0')}:00`)
+            },
+            yAxis: {
+                name: 'Number requests',
+                nameLocation: 'middle',
+                nameGap: 70,
+                nameTextStyle: {
+                    fontSize: 14,
+                    fontWeight: 'bolder'
+                },
+                type: 'value'
+            },
+            series: days.map((dayName, dayIndex) => {
+                return {
+                    name: dayName,
+                    type: 'line',
+                    tooltip: {
+                        formatter: (params) => `Day: ${params.seriesName} </br>Number requests: ${params.value} </br>Day time: ${params.name} - ${(parseInt(params.name.split(':')[0])+1).toString().padStart(2, '0')}:00`,
+                        extraCssText: 'box-shadow: 0 0 0 rgba(0, 0, 0, 0);'
+                    },
+                    symbolSize: 4,
+                    symbol: 'circle',
+                    lineStyle: {
+                        width: 1.5
+                    },
+                    data: values.slice(dayIndex * 24, dayIndex * 24 + 24)
+                }
+            })
+        }
+        setOption(option)
+        console.log('now')
+    }, [countryFilter, regionFilter])
+
+    return (
+        <div style={{
+            aspectRatio: 2/1
+        }}>
+            {option ? (<ReactEcharts option={option} />) : (<div style={{ textAlign: "center" }}>Loading...</div>)}
+        </div>
+    )
+        /*
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         const hourLabels = new Array(24).fill(0).map((_, i) => `${new String(i).padStart(2, '0')}:00`)
         let result = {
             title: new Array(days.length),
             singleAxis: new Array(days.length),
-            series: new Array(days.length)
+            series: new Array(days.length),
+            tooltip: {
+                position: 'top'
+            }
         }
         for (let dayIndex = 0; dayIndex < days.length; dayIndex++) {
             result.title[dayIndex] = {
@@ -99,19 +173,15 @@ function DayComparison() {
                 }
             }
             result.series[dayIndex] = {
-                singleAxisIndex: idx,
+                singleAxisIndex: dayIndex,
                 coordinateSystem: 'singleAxis',
                 type: 'scatter',
-                symbolSize: (dataItem) => dataItem[1] * 4,
-                data: values.slice(dayIndex * 24, 24).map((e, i) => [i, e])
+                symbolSize: (dataItem) => dataItem[1] / scatterPointScale,
+                data: values.slice(dayIndex * 24, dayIndex * 24 + 24).map((e, i) => [i, e])
             }
         }
         setOption(result)
-    }, [countryFilter, regionFilter])
+    */
+} 
 
-    return (
-        <Fragment>
-            <ReactEcharts option={option} />
-        </Fragment>
-    )
-}
+export default WeekDayComparison
