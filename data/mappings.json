@@ -37,14 +37,8 @@
     "http_version": {
       "type": "keyword"
     },
-    "device_info": {
-      "type": "text",
-      "fields": {
-        "keyword": {
-          "type": "keyword",
-          "ignore_above": 256
-        }
-      }
+    "user_agent": {
+      "type": "keyword"
     },
     "topics": {
       "type": "keyword"

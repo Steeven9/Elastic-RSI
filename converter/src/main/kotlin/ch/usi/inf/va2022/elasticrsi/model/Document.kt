@@ -1,5 +1,7 @@
 package ch.usi.inf.va2022.elasticrsi.model
 
+import ch.usi.inf.va2022.elasticrsi.useragent.UserAgentNode
+
 data class Document(
     // Temporal information
     val dateTime: String,
@@ -15,7 +17,7 @@ data class Document(
     val reqType: Keyword,
     val path: String,
     val httpVersion: String,
-    val deviceInfo: String,
+    val userAgent: UserAgentNode.UserAgent?,
     // Topics
     val topics: List<String>,
 )
