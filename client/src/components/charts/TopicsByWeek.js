@@ -9,54 +9,71 @@ const TopicsByWeek = () => {
   const [topics, setTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const selectedCountry = {
-      term: {
-        country: {
-          value: countryFilter,
-        },
-      },
-    };
-
-    let query = {
-      query: {
-        bool: {
-          must: [],
-        },
-      },
-      aggs: {
-        daysOfWeek: {
-          filters: {
-            filters: {
-              1: { match: { day_of_week: "1" } },
-              2: { match: { day_of_week: "2" } },
-              3: { match: { day_of_week: "3" } },
-              4: { match: { day_of_week: "4" } },
-              5: { match: { day_of_week: "5" } },
-              6: { match: { day_of_week: "6" } },
-              7: { match: { day_of_week: "7" } },
-            },
-          },
-        },
-      },
-    };
+    const isCountrySelected = countryFilter !== "Global";
+    const isRegionSelected = regionFilter !== "All";
+    const isTopicSelected = selectedTopics.length > 0;
 
     const barsData = [];
     await Promise.all(
       selectedTopics.map(async (el) => {
         try {
-          const obj = {
-            term: {
-              topics: el,
+          const query = {
+            ...(isCountrySelected || isRegionSelected || isTopicSelected
+              ? {
+                  query: {
+                    bool: {
+                      must: [
+                        ...(isCountrySelected
+                          ? [
+                              {
+                                match: {
+                                  country: countryFilter,
+                                },
+                              },
+                            ]
+                          : []),
+                        ...(isRegionSelected
+                          ? [
+                              {
+                                match: {
+                                  admin1: regionFilter,
+                                },
+                              },
+                            ]
+                          : []),
+                        ...(isTopicSelected
+                          ? [
+                              {
+                                match: {
+                                  topics: el,
+                                },
+                              },
+                            ]
+                          : []),
+                      ],
+                    },
+                  },
+                }
+              : {}),
+            aggs: {
+              daysOfWeek: {
+                filters: {
+                  filters: {
+                    1: { match: { day_of_week: "1" } },
+                    2: { match: { day_of_week: "2" } },
+                    3: { match: { day_of_week: "3" } },
+                    4: { match: { day_of_week: "4" } },
+                    5: { match: { day_of_week: "5" } },
+                    6: { match: { day_of_week: "6" } },
+                    7: { match: { day_of_week: "7" } },
+                  },
+                },
+              },
             },
           };
-
-          if (countryFilter !== "Global") {
-            query.query.bool.must = [selectedCountry, obj];
-          } else {
-            query.query.bool.must = [obj];
-          }
 
           const res = await getWithQuery(query);
           let resAgg = {};
