@@ -17,13 +17,16 @@ function mapHourToDayTime(hour) {
   }
 }
 
+function mapDateToDayTime(date) {
+  return mapHourToDayTime(date.getHours())
+}
+
 function DayTimesComparison() {
   const [data, setData] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
-
-  useEffect(() => {
+  useEffect(async () => {
     const isCountrySelected = countryFilter !== 'Global'
     const isRegionSelected = regionFilter !== 'All'
     const query = {
@@ -46,6 +49,22 @@ function DayTimesComparison() {
         }
       } : {}),
       aggs: {
+        by_hour: {
+          date_histogram: {
+            field: "date",
+            calendar_interval: "hour"
+          }
+        }
+      },
+      sort: [
+        {
+          date: {
+            order: "asc"
+          }
+        }
+      ]
+      /*
+      aggs: {
         by_day: {
           date_histogram: {
             field: "date",
@@ -64,8 +83,30 @@ function DayTimesComparison() {
         },
       },
       _source: false,
+    */
     };
+    const response = await getWithQuery(query)
+    const numberHours = response.aggregations.by_hour.buckets.length
+    let result = {
+      morning: 0,
+      afternoon: 0,
+      evening: 0,
+      night: 0,
+    };
+    for (let i = 0; i < numberHours; i++) {
+      const date = new Date(response.aggregations.by_hour.buckets[i].key_as_string)
+      result[mapDateToDayTime(date)] += response.aggregations.by_hour.buckets[i].doc_count
+    }
+    result = Object.keys(result).map((key) => {
+      return {
+        x: key,
+        y: result[key],
+      };
+    });
+    setData(result);
+    /*
     getWithQuery(query).then((response) => {
+      console.log(response)
       response.aggregations.by_day.buckets;
       let result = {
         morning: 0,
@@ -94,6 +135,7 @@ function DayTimesComparison() {
       });
       setData(result);
     });
+    */
   }, [countryFilter, regionFilter]);
 
   return (
@@ -106,7 +148,7 @@ function DayTimesComparison() {
               containLabel: true,
             },
             title: {
-              text: "Average number of requests per day time",
+              text: "Total number of requests per day time",
               left: "center",
             },
             tooltip: {

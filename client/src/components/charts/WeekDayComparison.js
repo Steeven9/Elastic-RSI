@@ -81,7 +81,7 @@ function WeekDayComparison() {
                 containLabel: true
             },
             title: {
-                text: 'Weekday comparison',
+                text: 'Weekday average comparison',
                 left: 'center'
             },
             legend: {
