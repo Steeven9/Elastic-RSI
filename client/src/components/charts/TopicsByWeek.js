@@ -1,4 +1,4 @@
-import { Autocomplete, Button, TextField } from "@mui/material";
+import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -10,20 +10,6 @@ const TopicsByWeek = () => {
   const [selectedTopics, setSelectedTopics] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
 
-  // const labelOption = {
-  //   show: true,
-  //   position: app.config.position,
-  //   distance: app.config.distance,
-  //   align: app.config.align,
-  //   verticalAlign: app.config.verticalAlign,
-  //   rotate: app.config.rotate,
-  //   formatter: '{c}  {name|{a}}',
-  //   fontSize: 16,
-  //   rich: {
-  //     name: {}
-  //   }
-  // };
-
   const getQuery = async () => {
     const selectedCountry = {
       term: {
@@ -32,15 +18,6 @@ const TopicsByWeek = () => {
         },
       },
     };
-    const byTopics = selectedTopics.map((topic) => {
-      const obj = {
-        term: {
-          topics: topic,
-        },
-      };
-
-      return obj;
-    });
 
     let query = {
       query: {
@@ -67,12 +44,18 @@ const TopicsByWeek = () => {
 
     const barsData = [];
     await Promise.all(
-      byTopics.map(async (el) => {
+      selectedTopics.map(async (el) => {
         try {
+          const obj = {
+            term: {
+              topics: el,
+            },
+          };
+          
           if (countryFilter !== "Global") {
-            query.query.bool.must = [selectedCountry, el];
+            query.query.bool.must = [selectedCountry, obj];
           } else {
-            query.query.bool.must = [el];
+            query.query.bool.must = [obj];
           }
 
           const res = await getWithQuery(query);
@@ -131,15 +114,15 @@ const TopicsByWeek = () => {
   }
 
   useEffect(() => {
-    // getQuery();
     getTopicsQuery();
   }, [countryFilter]);
 
   return (
     <>
-      <div>
+      <Grid container={true}>
         <Autocomplete
           multiple
+          sx={{ width: 500 }}
           id="tags-standard"
           onChange={handleChange}
           options={topics}
@@ -154,17 +137,20 @@ const TopicsByWeek = () => {
           )}
         />
         <Button variant="outlined" onClick={handleClick}>Compare</Button>
-      </div>
+      </Grid>
       {chartData.length > 0 ? (
         <div>
           <ReactEcharts
             option={{
-              grid: {
-                containLabel: true,
-              },
               title: {
-                text: "# requests per topic and days of week (topic: music)",
+                text: "# requests per topic and days of week",
                 left: "center",
+                top: 20
+              },
+              legend: {
+                data: selectedTopics,
+                top: 0,
+                right: 100,
               },
               tooltip: {
                 trigger: "item",
