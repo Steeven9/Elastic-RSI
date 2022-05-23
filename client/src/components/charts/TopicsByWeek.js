@@ -109,6 +109,7 @@ const TopicsByWeek = () => {
         terms: {
           field: "topics",
           size: 10000,
+          min_doc_count: 50,
         },
       },
     };
@@ -132,7 +133,11 @@ const TopicsByWeek = () => {
 
   useEffect(() => {
     getTopicsQuery();
-  }, [countryFilter]);
+  }, []);
+
+  useEffect(() => {
+    getQuery();
+  }, [countryFilter, regionFilter]);
 
   return (
     <>
