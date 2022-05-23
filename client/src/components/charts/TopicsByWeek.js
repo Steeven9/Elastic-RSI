@@ -51,7 +51,7 @@ const TopicsByWeek = () => {
               topics: el,
             },
           };
-          
+
           if (countryFilter !== "Global") {
             query.query.bool.must = [selectedCountry, obj];
           } else {
@@ -68,12 +68,12 @@ const TopicsByWeek = () => {
 
           const barData = {
             name: el,
-            type: 'bar',
+            type: "bar",
             barGap: 0,
             emphasis: {
-              focus: 'series'
+              focus: "series",
             },
-            data: resArray
+            data: resArray,
           };
 
           barsData.push(barData);
@@ -83,7 +83,7 @@ const TopicsByWeek = () => {
       })
     );
 
-    setdata(barsData)
+    setdata(barsData);
   };
 
   const getTopicsQuery = async () => {
@@ -111,7 +111,7 @@ const TopicsByWeek = () => {
 
   const handleClick = (evt) => {
     getQuery();
-  }
+  };
 
   useEffect(() => {
     getTopicsQuery();
@@ -119,24 +119,29 @@ const TopicsByWeek = () => {
 
   return (
     <>
-      <Grid container={true}>
-        <Autocomplete
-          multiple
-          sx={{ width: 500 }}
-          id="tags-standard"
-          onChange={handleChange}
-          options={topics}
-          getOptionDisabled={() => (selectedTopics.length > 3 ? true : false)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Multiple values"
-              placeholder="Topics"
-            />
-          )}
-        />
-        <Button variant="outlined" onClick={handleClick}>Compare</Button>
+      <Grid sx={{ padding: 10 }} spacing={4} container>
+        <Grid item xs={6} md={8}>
+          <Autocomplete
+            multiple
+            id="tags-standard"
+            onChange={handleChange}
+            options={topics}
+            getOptionDisabled={() => (selectedTopics.length > 3 ? true : false)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="Select topics to compare (up to 4)"
+                placeholder="Topics"
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={6} md={4}>
+          <Button variant="outlined" onClick={handleClick}>
+            Compare
+          </Button>
+        </Grid>
       </Grid>
       {chartData.length > 0 ? (
         <div>
@@ -145,7 +150,7 @@ const TopicsByWeek = () => {
               title: {
                 text: "# requests per topic and days of week",
                 left: "center",
-                top: 20
+                top: 20,
               },
               legend: {
                 data: selectedTopics,
