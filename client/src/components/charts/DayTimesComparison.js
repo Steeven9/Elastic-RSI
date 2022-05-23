@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Fragment } from "react";
 import ReactEcharts from "echarts-for-react";
 import { getWithQuery } from "../../API";
+import { useSelector } from "react-redux";
 
 function mapHourToDayTime(hour) {
   if (6 < hour && hour <= 12) {
@@ -18,21 +19,32 @@ function mapHourToDayTime(hour) {
 
 function DayTimesComparison() {
   const [data, setData] = useState(undefined);
+  const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+
 
   useEffect(() => {
-    // TO DO: integrate selection
+    const isCountrySelected = countryFilter !== 'Global'
+    const isRegionSelected = regionFilter !== 'All'
     const query = {
-      query: {
-        bool: {
-          must: [
-            {
-              match: {
-                country: "CH",
-              },
-            },
-          ],
-        },
-      },
+      ...(isCountrySelected || isRegionSelected ? {
+        query: {
+          bool: {
+            must: [
+              ...(isCountrySelected ? [{
+                match: {
+                  country: countryFilter,
+                },
+              }] : []),
+              ...(isRegionSelected ? [{
+                match: {
+                  admin1: regionFilter,
+                },
+              }] : [])
+            ],
+          },
+        }
+      } : {}),
       aggs: {
         by_day: {
           date_histogram: {
@@ -82,7 +94,7 @@ function DayTimesComparison() {
       });
       setData(result);
     });
-  }, []);
+  }, [countryFilter, regionFilter]);
 
   return (
     <Fragment>
@@ -94,7 +106,7 @@ function DayTimesComparison() {
               containLabel: true,
             },
             title: {
-              text: "Average number of requests per day time in Switzerland",
+              text: "Average number of requests per day time",
               left: "center",
             },
             tooltip: {

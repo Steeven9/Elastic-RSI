@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Fragment } from "react";
 import ReactEcharts from "echarts-for-react";
 import { getWithQuery } from "../../API";
+import { useSelector } from "react-redux";
 
 function Overview() {
   const [baseData, setBaseData] = useState(undefined);
@@ -11,11 +12,33 @@ function Overview() {
   sourceReference.current = source;
   const baseDataReference = useRef();
   baseDataReference.current = baseData;
+  const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+
 
   useEffect(async () => {
-    // TO DO: integrate selection
+    const isCountrySelected = countryFilter !== 'Global'
+    const isRegionSelected = regionFilter !== 'All'
     const query = {
       size: 0,
+      ...(isCountrySelected || isRegionSelected ? {
+        query: {
+          bool: {
+            must: [
+              ...(isCountrySelected ? [{
+                match: {
+                  country: countryFilter,
+                },
+              }] : []),
+              ...(isRegionSelected ? [{
+                match: {
+                  admin1: regionFilter,
+                },
+              }] : [])
+            ],
+          },
+        }
+      } : {}),
       aggs: {
         by_minute: {
           date_histogram: {
@@ -51,7 +74,7 @@ function Overview() {
       ),
     };
     setBaseData(result);
-  }, []);
+  }, [countryFilter, regionFilter]);
 
   useEffect(() => {
     if (typeof baseData !== "undefined") {
@@ -136,16 +159,16 @@ function Overview() {
     if (isDrillingDownFromDaysToHours(sourceReference.current, indexRange)) {
       const start = new Date(
         sourceReference.current.timeLevelRanges.base.days.start.getTime() +
-          (indexRange.start -
-            sourceReference.current.timeLevelIndices.base.days.start) *
-            24 *
-            60 *
-            60 *
-            1000
+        (indexRange.start -
+          sourceReference.current.timeLevelIndices.base.days.start) *
+        24 *
+        60 *
+        60 *
+        1000
       );
       const end = new Date(
         start.getTime() +
-          (indexRange.end - indexRange.start) * 24 * 60 * 60 * 1000
+        (indexRange.end - indexRange.start) * 24 * 60 * 60 * 1000
       );
       const dayRange = {
         start: start,
@@ -174,7 +197,7 @@ function Overview() {
     ) {
       const start = new Date(
         indexRange.start * 60 * 60 * 1000 +
-          sourceReference.current.currentData.x[0].getTime()
+        sourceReference.current.currentData.x[0].getTime()
       );
       const end = new Date(
         (indexRange.end - indexRange.start) * 60 * 60 * 1000 + start.getTime()

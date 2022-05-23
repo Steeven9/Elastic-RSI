@@ -134,7 +134,6 @@ function WeekDayComparison() {
             })
         }
         setOption(option)
-        console.log('now')
     }, [countryFilter, regionFilter])
 
     return (
