@@ -1,12 +1,12 @@
 import React from "react";
 import CountsPerDayOfWeek from "../charts/CountsPerDayOfWeek";
-import TopicsPerDayOfWeek from "../charts/TopicsView";
+import TopicsByWeek from "../charts/TopicsByWeek";
 
 const ByWeek = () => {
   return (
     <>
       <CountsPerDayOfWeek />
-      <TopicsPerDayOfWeek />
+      <TopicsByWeek />
     </>
   );
 };
