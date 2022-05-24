@@ -7,19 +7,24 @@ services:
     restart: always
     volumes:
       - ./esdata01:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - node.name=elasticsearch
       - cluster.name=cluster_name
-      - node.name=server_name
+      - cluster.initial_master_nodes=elasticsearch,elasticsearch02
+      - discovery.seed_hosts=elasticsearch02
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
       - network.host=0.0.0.0
-      - discovery.seed_hosts=["server_name"] # hostname
-      - discovery.type=single-node
       - xpack.security.enrollment.enabled=true
       - xpack.security.http.ssl.enabled=false
-      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=certs/elasticsearch/elasticsearch.key
+      - xpack.security.transport.ssl.certificate=certs/elasticsearch/elasticsearch.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
     ports:
       - 9200:9200
     ulimits:
@@ -36,6 +41,37 @@ services:
       timeout: 10s
       retries: 120
 
+  elasticsearch02:
+    container_name: elasticsearch02
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.2.0
+    restart: always
+    volumes:
+      - ./esdata02:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certs
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - node.name=elasticsearch02
+      - cluster.name=cluster_name
+      - cluster.initial_master_nodes=elasticsearch,elasticsearch02
+      - discovery.seed_hosts=elasticsearch
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - network.host=0.0.0.0
+      - xpack.security.enrollment.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=certs/elasticsearch02/0202.key
+      - xpack.security.transport.ssl.certificate=certs/elasticsearch02/elasticsearch02.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+    ports:
+      - 9300:9300
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
   kibana:
     container_name: kibana
     depends_on:
@@ -44,6 +80,7 @@ services:
     restart: always
     volumes:
       - ./kibanadata:/usr/share/kibana/data
+      - ./certs:/usr/share/kibana/config/certs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
@@ -53,8 +90,7 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
-      - server.host=0.0.0.0
-      - server.ssl.enabled=false
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
       # fill those with random stuff (min 32 characters)
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiuo
       - XPACK_SECURITY_ENCRYPTIONKEY=asasdasdaseoufghaskfihdsilhfsweiu22

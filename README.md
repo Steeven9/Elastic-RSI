@@ -2,56 +2,68 @@
 
 VAA 2022 final project - group 3
 
-## Set up ElasticSearch and Kibana
+This project can run in two variants: either client-only, using our shared backend and Elasticsearch instance,
+or full-stack, bringing up all the services. Refer to the relative section for instructions.
 
-Create a `.env` file with the following:
+## Client-only mode
+
+Create a `.env` file in the root of the repo with the following:
+
+```bash
+REACT_APP_BACKEND_HOSTNAME=https://elastic-rsi.soulsbros.ch
+REACT_APP_BACKEND_PORT=443
+REACT_APP_BACKEND_API_TOKEN= # ask us for this one
+```
+
+Then install the dependencies and start the client:
+
+```bash
+npm ri
+cd client
+npm start
+```
+
+Direct your browser to [http://localhost:3000](http://localhost:3000) and start exploring!
+
+## Full-stack mode (aka expert mode)
+
+Note: this assumes you're running two nodes (`elasticsearch`, `elasticsearch02`) on the same machine. Ensure you have a LOT of RAM and I/O throughput. Really.
+
+Create a `.env` file in the root of the repo with the following:
 
 ```bash
 ELASTIC_PASSWORD=somestuff
 KIBANA_PASSWORD=somestuff
 REACT_APP_BACKEND_API_TOKEN=somestuff
 ELASTIC_API_KEY=
-RSI_API_USER=   # get from RSI
-RSI_API_PWD=    # get from RSI
+RSI_API_USER=   # get it from RSI
+RSI_API_PWD=    # get it from RSI
 ELASTIC_URL=http://localhost:9200
 ```
 
-If you want to use our remote backend, add those as well:
+If it's the first time setting up the project, run the one-time initial setup:
 
 ```bash
-REACT_APP_BACKEND_HOSTNAME=https://elastic-rsi.soulsbros.ch
-REACT_APP_BACKEND_PORT=443
+./setupElastic.sh
 ```
 
-Bring up the stack with:
+(if something fails, try running those commands manually).
+
+Then, create an API key (via the Kibana GUI or the Elasticsearch API) with read privileges
+on all indices and add it to the `.env` file under the `ELASTIC_API_KEY` key.
+
+For successive restarts, simply bring up the stack with:
 
 ```bash
 docker-compose up -d
 ```
 
-Then set the Kibana system password:
+All containers should show up as healthy after a couple minutes at maximum.
 
-```bash
-source ./exportEnv.sh
+## Ingesting the data
 
-curl -X POST -u elastic:${ELASTIC_PASSWORD} \
-http://localhost:9200/_security/user/kibana_system/_password \
--H "Content-Type: application/json" 
--d "{\"password\":\"${KIBANA_PASSWORD}\"}"
-```
-
-If you get get `{}` back as an answer, the operation was successful and you can restart Kibana to apply it:
-
-```bash
-docker restart kibana
-```
-
-Both containers should show up as healthy after a couple minutes at maximum.
-
-Then, create an API key (via the Kibana GUI or the Elasticsearch API) with read privileges
-on the index and add it to the `.env` file under `ELASTIC_API_KEY`.
-
-## Ingest the data
+This assumes you're running the script on the same node of the Elasticsearch instance.
+You can override this by manually prepending `ELASTIC_URL` before the script call.
 
 ```bash
 ./ingestData.sh rsi
@@ -59,20 +71,15 @@ on the index and add it to the `.env` file under `ELASTIC_API_KEY`.
 
 (Note: refer to the [converter README](./converter/README.md) for more information)
 
-## Start the webserver
-
-```bash
-cd server
-npm run dev
-```
-
-And in a new shell:
-
-```bash
-cd client
-npm start
-```
-
 ## Backend APIs
 
+We documented all our APIs with Swagger; authentication is made via bearer token (the one set with `REACT_APP_BACKEND_API_TOKEN`).
 See [https://elastic-rsi.soulsbros.ch/api/docs](https://elastic-rsi.soulsbros.ch/api/docs)
+
+## Useful resources
+
+[https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-compose-file](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-compose-file)
+
+[https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup.html](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup.html)
+
+[https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html)
