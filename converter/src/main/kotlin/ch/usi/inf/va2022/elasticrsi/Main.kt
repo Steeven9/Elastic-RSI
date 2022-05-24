@@ -1,5 +1,6 @@
 package ch.usi.inf.va2022.elasticrsi
 
+import io.github.mngsk.devicedetector.DeviceDetector
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -50,6 +51,7 @@ class Main : Callable<Int> {
 
     override fun call(): Int = runBlocking {
         val geocoder = ReverseGeocoder()
+        val deviceDetector = DeviceDetector.DeviceDetectorBuilder().build()
         Output(outputPath, entriesPerFile).use { output ->
             val chan = Channel<String>(Config.Output.CHANNEL_SIZE)
 
@@ -64,7 +66,7 @@ class Main : Callable<Int> {
                                 System.err.println("Skipping malformed log line in file ${path.fileName}:\t$line")
                             }
                         } else {
-                            chan.send(partialDocument.augment(geocoder).toNdjson())
+                            chan.send(partialDocument.augment(geocoder, deviceDetector).toNdjson())
                         }
                     }
                 }
