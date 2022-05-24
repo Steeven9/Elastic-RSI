@@ -2,13 +2,13 @@
 
 package ch.usi.inf.va2022.elasticrsi
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ch.usi.inf.va2022.elasticrsi.model.Document
 import ch.usi.inf.va2022.elasticrsi.model.GeoPoint
 import ch.usi.inf.va2022.elasticrsi.model.PartialDocument
-import ch.usi.inf.va2022.elasticrsi.useragent.UserAgentNode
-import ch.usi.inf.va2022.elasticrsi.useragent.UserAgentParser
+import io.github.mngsk.devicedetector.Detection
+import io.github.mngsk.devicedetector.DeviceDetector
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import uk.recurse.geocoding.reverse.ReverseGeocoder
 import java.time.LocalDate
 import java.time.LocalTime
@@ -43,7 +43,10 @@ fun parseLogLine(line: String): PartialDocument? {
     )
 }
 
-suspend fun PartialDocument.augment(geocoder: ReverseGeocoder): Document = withContext(Dispatchers.Default) {
+suspend fun PartialDocument.augment(
+    geocoder: ReverseGeocoder,
+    deviceDetector: DeviceDetector,
+): Document = withContext(Dispatchers.Default) {
     val dateTime = Config.Parser.DATE_FORMAT.format(date) +
             " " +
             Config.Parser.TIME_FORMAT.format(time)
@@ -61,7 +64,7 @@ suspend fun PartialDocument.augment(geocoder: ReverseGeocoder): Document = withC
         .map { it.gmtOffset() }
         .orElse(0f)
     val topics = RsiTopicUtil.buildTopicsFromPath(path)
-    val userAgent = UserAgentParser()(deviceInfo)
+    val userAgent = deviceDetector.detect(deviceInfo)
 
     Document(
         dateTime = dateTime,
@@ -101,17 +104,21 @@ fun Document.toNdjson(): String {
             "}\n"
 }
 
-private fun UserAgentNode.UserAgent?.keywords(): String {
-    return '[' +
-            (this?.programs?.joinToString(", ") { program ->
-                val sb = StringBuilder()
-                sb.append("\"${program.product.name.name} ${program.product.version.segment.joinToString(".")}\"")
-                if (program.comment != null && program.comment.details.isNotEmpty()) {
-                    sb.append(", \"")
-                    sb.append(program.comment.details.joinToString("\", \"") { it.detail })
-                    sb.append("\"")
-                }
-                sb.toString()
-            } ?: "") +
-            ']'
+private fun Detection.keywords(): String {
+    val keywords = HashSet<String>()
+    client?.ifPresent { client ->
+        client.name.ifPresent { name -> keywords.add(name) }
+        keywords.add(client.type)
+    }
+    device?.ifPresent { device ->
+        device.brand.ifPresent { brand -> keywords.add(brand) }
+        device.model.ifPresent { model -> keywords.add(model) }
+        keywords.add(device.type)
+    }
+    operatingSystem.ifPresent { os ->
+        os.family.ifPresent { family -> keywords.add(family) }
+        os.platform.ifPresent { platform -> keywords.add(platform) }
+        keywords.add(os.name)
+    }
+    return "[\"${keywords.joinToString("\", \"")}\"]"
 }
