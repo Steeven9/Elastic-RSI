@@ -1,6 +1,6 @@
 package ch.usi.inf.va2022.elasticrsi.model
 
-import ch.usi.inf.va2022.elasticrsi.useragent.UserAgentNode
+import io.github.mngsk.devicedetector.Detection
 
 data class Document(
     // Temporal information
@@ -17,7 +17,7 @@ data class Document(
     val reqType: Keyword,
     val path: String,
     val httpVersion: String,
-    val userAgent: UserAgentNode.UserAgent?,
+    val userAgent: Detection,
     // Topics
     val topics: List<String>,
 )
