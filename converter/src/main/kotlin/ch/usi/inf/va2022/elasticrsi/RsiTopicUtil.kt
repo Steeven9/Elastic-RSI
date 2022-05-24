@@ -81,6 +81,14 @@ object RsiTopicUtil {
                     .replace("-", "")
             }
             .filter {
+                // 30+ chars are usually ids
+                it.length < 30
+            }
+            .filter {
+                // Skip scripts and parameters
+                !it.startsWith("&") && it.endsWith(".jsp")
+            }
+            .filter {
                 // Skip words in blacklist and integer-only values
                 !(it in TOPIC_BLACKLIST || it matches REGEX_INTEGER)
             }
