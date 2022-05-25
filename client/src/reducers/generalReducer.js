@@ -2,8 +2,8 @@ const initialState = {
   page: "home",
   drawer: false,
   tab: "home",
-  countryFilter: "Global",
-  regionFilter: "All",
+  countryFilter: ["Global"],
+  regionFilter: ["All"],
 };
 
 const generalReducer = (state = initialState, { type, payload }) => {

@@ -9,59 +9,75 @@ const TopicsByWeek = () => {
   const [topics, setTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const selectedCountry = {
-      term: {
-        country: {
-          value: countryFilter,
-        },
-      },
-    };
-
-    let query = {
-      query: {
-        bool: {
-          must: [],
-        },
-      },
-      aggs: {
-        daysOfWeek: {
-          filters: {
-            filters: {
-              1: { match: { day_of_week: "1" } },
-              2: { match: { day_of_week: "2" } },
-              3: { match: { day_of_week: "3" } },
-              4: { match: { day_of_week: "4" } },
-              5: { match: { day_of_week: "5" } },
-              6: { match: { day_of_week: "6" } },
-              7: { match: { day_of_week: "7" } },
-            },
-          },
-        },
-      },
-    };
+    const isCountrySelected = !countryFilter.includes("Global");
+    const isRegionSelected = !regionFilter.includes("All");
+    const isTopicSelected = selectedTopics.length > 0;
 
     const barsData = [];
     await Promise.all(
       selectedTopics.map(async (el) => {
         try {
-          const obj = {
-            term: {
-              topics: el,
+          const query = {
+            ...(isCountrySelected || isRegionSelected || isTopicSelected
+              ? {
+                  query: {
+                    bool: {
+                      must: [
+                        ...(isCountrySelected
+                          ? [
+                              {
+                                terms: {
+                                  country: countryFilter,
+                                },
+                              },
+                            ]
+                          : []),
+                        ...(isRegionSelected
+                          ? [
+                              {
+                                terms: {
+                                  admin1: regionFilter,
+                                },
+                              },
+                            ]
+                          : []),
+                        ...(isTopicSelected
+                          ? [
+                              {
+                                match: {
+                                  topics: el,
+                                },
+                              },
+                            ]
+                          : []),
+                      ],
+                    },
+                  },
+                }
+              : {}),
+            aggs: {
+              daysOfWeek: {
+                filters: {
+                  filters: {
+                    1: { match: { day_of_week: "1" } },
+                    2: { match: { day_of_week: "2" } },
+                    3: { match: { day_of_week: "3" } },
+                    4: { match: { day_of_week: "4" } },
+                    5: { match: { day_of_week: "5" } },
+                    6: { match: { day_of_week: "6" } },
+                    7: { match: { day_of_week: "7" } },
+                  },
+                },
+              },
             },
           };
 
-          if (countryFilter !== "Global") {
-            query.query.bool.must = [selectedCountry, obj];
-          } else {
-            query.query.bool.must = [obj];
-          }
-
           const res = await getWithQuery(query);
-          let resAgg = {};
 
-          resAgg = res.aggregations.daysOfWeek.buckets;
+          const resAgg = res.aggregations.daysOfWeek.buckets;
           const resArray = Object.keys(resAgg).map((key) => {
             return resAgg[key].doc_count;
           });
@@ -92,6 +108,7 @@ const TopicsByWeek = () => {
         terms: {
           field: "topics",
           size: 10000,
+          min_doc_count: 50,
         },
       },
     };
@@ -115,7 +132,11 @@ const TopicsByWeek = () => {
 
   useEffect(() => {
     getTopicsQuery();
-  }, [countryFilter]);
+  }, []);
+
+  useEffect(() => {
+    getQuery();
+  }, [countryFilter, regionFilter]);
 
   return (
     <>

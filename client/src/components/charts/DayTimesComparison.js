@@ -1,9 +1,7 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { Fragment } from "react";
 import ReactEcharts from "echarts-for-react";
-import { getWithQuery } from "../../API";
+import React, { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { getWithQuery } from "../../API";
 
 function mapHourToDayTime(hour) {
   if (6 < hour && hour <= 12) {
@@ -27,8 +25,8 @@ function DayTimesComparison() {
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   useEffect(async () => {
-    const isCountrySelected = countryFilter !== 'Global'
-    const isRegionSelected = regionFilter !== 'All'
+    const isCountrySelected = !countryFilter.includes("Global");
+    const isRegionSelected = !regionFilter.includes("All");
     const query = {
       ...(isCountrySelected || isRegionSelected ? {
         query: {

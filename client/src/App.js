@@ -5,7 +5,7 @@ import {
   CssBaseline,
   IconButton,
   Toolbar,
-  Typography,
+  Typography
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import React, { useCallback } from "react";
@@ -61,9 +61,7 @@ const App = () => {
           <AppDrawer />
           <Box component="main">
             <Toolbar />
-            <div>
-              <GeneralActions />
-            </div>
+            <GeneralActions />
             <ChartTabs />
           </Box>
         </div>

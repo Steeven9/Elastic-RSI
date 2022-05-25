@@ -1,44 +1,50 @@
 import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { getAggs } from "../../API";
+import { getWithQuery } from "../../API";
 
 const TopicsView = () => {
   const [chartData, setdata] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    let query = {
-      daysOfWeek: {
-        terms: {
-          field: "topics",
-          size: 1000,
-        },
-      },
-    };
-    if (countryFilter !== "Global") {
-      query = {
+    const isCountrySelected = !countryFilter.includes("Global");
+    const isRegionSelected = !regionFilter.includes("All");
+
+    const query = {
+      ...(isCountrySelected || isRegionSelected ? {
+        query: {
+          bool: {
+            must: [
+              ...(isCountrySelected ? [{
+                match: {
+                  country: countryFilter,
+                },
+              }] : []),
+              ...(isRegionSelected ? [{
+                match: {
+                  admin1: regionFilter,
+                },
+              }] : [])
+            ],
+          },
+        }
+      } : {}),
+      aggs: {
         daysOfWeek: {
-          filter: { term: { country: countryFilter } },
-          aggs: {
-            daysOfWeek: {
-              terms: {
-                field: "topics",
-                size: 1000,
-              },
-            },
+          terms: {
+            field: "topics",
+            size: 1000,
           },
         },
-      };
+      },
     }
 
-    const res = await getAggs(query);
+    const res = await getWithQuery(query);
     let resAgg = {};
-    if (countryFilter !== "Global") {
-      resAgg = res.daysOfWeek.daysOfWeek.buckets;
-    } else {
-      resAgg = res.daysOfWeek.buckets;
-    }
+
+    resAgg = res.aggregations.daysOfWeek.buckets;
     const resArray = Object.keys(resAgg).map((key) => {
       return { name: resAgg[key].key, value: resAgg[key].doc_count };
     });
@@ -70,7 +76,7 @@ const TopicsView = () => {
 
   useEffect(() => {
     getQuery();
-  }, [countryFilter]);
+  }, [countryFilter, regionFilter]);
 
   return chartData.length > 0 ? (
     <div>
