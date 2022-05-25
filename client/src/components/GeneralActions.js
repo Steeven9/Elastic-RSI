@@ -1,9 +1,6 @@
-import {
-  Autocomplete, Grid, TextField,
-  Typography
-} from "@mui/material";
+import { Autocomplete, Grid, TextField, Typography } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import * as actions from "../actions";
 import { getAggs, getWithQuery } from "../API";
 
@@ -11,9 +8,6 @@ const GeneralActions = () => {
   const dispatch = useDispatch();
   const [countries, setCountries] = useState([]);
   const [regions, setRegions] = useState([]);
-
-  const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
-  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const setCountryFilter = useCallback(
     (data) => {
@@ -43,7 +37,7 @@ const GeneralActions = () => {
 
     const resAgg = res.countries.buckets;
     const resArray = Object.keys(resAgg).map((key) => {
-     return resAgg[key].key;
+      return resAgg[key].key;
     });
     setCountries(resArray);
   };
@@ -51,25 +45,27 @@ const GeneralActions = () => {
   const getRegions = async (country) => {
     const isCountrySelected = country.length > 0;
     const query = {
-      ...(isCountrySelected ? {
-        query: {
-          bool: {
-            must: {
-              terms: {
-                country: country
-              }
-            }
+      ...(isCountrySelected
+        ? {
+            query: {
+              bool: {
+                must: {
+                  terms: {
+                    country: country,
+                  },
+                },
+              },
+            },
           }
-        }
-      } : {}),
+        : {}),
       aggs: {
         regions: {
           terms: {
             field: "admin1",
             size: 200,
             order: {
-              _key: 'asc'
-            }
+              _key: "asc",
+            },
           },
         },
       },
@@ -99,7 +95,11 @@ const GeneralActions = () => {
   };
 
   return (
-    <Grid sx={{padding: 10,border: '1px solid'}} container justifyContent='space-between'>
+    <Grid
+      sx={{ padding: 10, border: "1px solid" }}
+      container
+      justifyContent="space-between"
+    >
       <Grid item xs={6} md={12}>
         <Typography align="center" variant="h4">
           General Filters
@@ -107,7 +107,6 @@ const GeneralActions = () => {
       </Grid>
       <Grid item xs={6} md={4}>
         <Autocomplete
-          getOptionDisabled={() => (countryFilter.length > 3 ? true : false)}
           multiple
           id="tags-standard"
           onChange={handleChangeCountry}
@@ -122,8 +121,8 @@ const GeneralActions = () => {
           )}
         />
       </Grid>
-      <Grid item xs={6} md={4} >
-      <Autocomplete
+      <Grid item xs={6} md={4}>
+        <Autocomplete
           multiple
           id="tags-standard"
           onChange={handleChangeRegion}

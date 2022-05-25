@@ -1,6 +1,7 @@
 import ReactEcharts from "echarts-for-react";
 import React, { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import buildQuery from "../../utils/query";
 import { getWithQuery } from "../../API";
 
 function mapHourToDayTime(hour) {
@@ -16,7 +17,7 @@ function mapHourToDayTime(hour) {
 }
 
 function mapDateToDayTime(date) {
-  return mapHourToDayTime(date.getHours())
+  return mapHourToDayTime(date.getHours());
 }
 
 function DayTimesComparison() {
@@ -24,67 +25,27 @@ function DayTimesComparison() {
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
-  useEffect(async () => {
-    const isCountrySelected = countryFilter.length > 0;
-    const isRegionSelected = regionFilter.length > 0;
-    const query = {
-      ...(isCountrySelected || isRegionSelected ? {
-        query: {
-          bool: {
-            must: [
-              ...(isCountrySelected ? [{
-                terms: {
-                  country: countryFilter,
-                },
-              }] : []),
-              ...(isRegionSelected ? [{
-                terms: {
-                  admin1: regionFilter,
-                },
-              }] : [])
-            ],
-          },
-        }
-      } : {}),
-      aggs: {
-        by_hour: {
-          date_histogram: {
-            field: "date",
-            calendar_interval: "hour"
-          }
-        }
+  const filter = async () => {
+    const query = buildQuery(
+      {
+        country: countryFilter,
+        admin1: regionFilter,
       },
-      sort: [
-        {
-          date: {
-            order: "asc"
-          }
-        }
-      ]
-      /*
-      aggs: {
-        by_day: {
-          date_histogram: {
-            field: "date",
-            calendar_interval: "day",
-            keyed: true,
-            format: "yyyy-MM-dd",
-          },
-          aggs: {
-            by_hour: {
-              date_histogram: {
-                field: "date",
-                calendar_interval: "hour",
-              },
+      {
+        aggs: {
+          by_hour: {
+            date_histogram: {
+              field: "date",
+              calendar_interval: "hour",
             },
           },
         },
-      },
-      _source: false,
-    */
-    };
-    const response = await getWithQuery(query)
-    const numberHours = response.aggregations.by_hour.buckets.length
+        sort: [{ date: { order: "asc" } }],
+      }
+    );
+
+    const response = await getWithQuery(query);
+    const numberHours = response.aggregations.by_hour.buckets.length;
     let result = {
       morning: 0,
       afternoon: 0,
@@ -92,8 +53,11 @@ function DayTimesComparison() {
       night: 0,
     };
     for (let i = 0; i < numberHours; i++) {
-      const date = new Date(response.aggregations.by_hour.buckets[i].key_as_string)
-      result[mapDateToDayTime(date)] += response.aggregations.by_hour.buckets[i].doc_count
+      const date = new Date(
+        response.aggregations.by_hour.buckets[i].key_as_string
+      );
+      result[mapDateToDayTime(date)] +=
+        response.aggregations.by_hour.buckets[i].doc_count;
     }
     result = Object.keys(result).map((key) => {
       return {
@@ -102,39 +66,10 @@ function DayTimesComparison() {
       };
     });
     setData(result);
-    /*
-    getWithQuery(query).then((response) => {
-      console.log(response)
-      response.aggregations.by_day.buckets;
-      let result = {
-        morning: 0,
-        afternoon: 0,
-        evening: 0,
-        night: 0,
-      };
-      let dayCounter = 0;
-      for (const dayKey in response.aggregations.by_day.buckets) {
-        for (const hourObject of response.aggregations.by_day.buckets[dayKey]
-          .by_hour.buckets) {
-          let hour = hourObject.key_as_string.split(" ")[1].split(":")[0];
-          hour = parseInt(hour);
-          result[mapHourToDayTime(hour)] += hourObject.doc_count;
-        }
-        dayCounter += 1;
-      }
-      for (const dayTimeKey in result) {
-        result[dayTimeKey] = result[dayTimeKey] / dayCounter;
-      }
-      result = Object.keys(result).map((key) => {
-        return {
-          x: key,
-          y: result[key],
-        };
-      });
-      setData(result);
-    });
-    */
-  }, [countryFilter, regionFilter]);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => filter(), [countryFilter, regionFilter]);
 
   return (
     <Fragment>

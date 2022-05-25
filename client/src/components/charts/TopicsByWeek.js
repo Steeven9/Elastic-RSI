@@ -3,6 +3,7 @@ import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getAggs, getWithQuery } from "../../API";
+import buildQuery from "../../utils/query";
 
 const TopicsByWeek = () => {
   const [chartData, setdata] = useState([]);
@@ -12,68 +13,33 @@ const TopicsByWeek = () => {
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const isCountrySelected = countryFilter.length > 0;
-    const isRegionSelected = regionFilter.length > 0;
-    const isTopicSelected = selectedTopics.length > 0;
-
     const barsData = [];
     await Promise.all(
       selectedTopics.map(async (el) => {
         try {
-          const query = {
-            ...(isCountrySelected || isRegionSelected || isTopicSelected
-              ? {
-                  query: {
-                    bool: {
-                      must: [
-                        ...(isCountrySelected
-                          ? [
-                              {
-                                terms: {
-                                  country: countryFilter,
-                                },
-                              },
-                            ]
-                          : []),
-                        ...(isRegionSelected
-                          ? [
-                              {
-                                terms: {
-                                  admin1: regionFilter,
-                                },
-                              },
-                            ]
-                          : []),
-                        ...(isTopicSelected
-                          ? [
-                              {
-                                match: {
-                                  topics: el,
-                                },
-                              },
-                            ]
-                          : []),
-                      ],
-                    },
-                  },
-                }
-              : {}),
-            aggs: {
-              daysOfWeek: {
-                filters: {
+          const query = buildQuery(
+            {
+              country: countryFilter,
+              admin1: regionFilter,
+            },
+            {
+              aggs: {
+                daysOfWeek: {
                   filters: {
-                    1: { match: { day_of_week: "1" } },
-                    2: { match: { day_of_week: "2" } },
-                    3: { match: { day_of_week: "3" } },
-                    4: { match: { day_of_week: "4" } },
-                    5: { match: { day_of_week: "5" } },
-                    6: { match: { day_of_week: "6" } },
-                    7: { match: { day_of_week: "7" } },
+                    filters: {
+                      1: { match: { day_of_week: "1" } },
+                      2: { match: { day_of_week: "2" } },
+                      3: { match: { day_of_week: "3" } },
+                      4: { match: { day_of_week: "4" } },
+                      5: { match: { day_of_week: "5" } },
+                      6: { match: { day_of_week: "6" } },
+                      7: { match: { day_of_week: "7" } },
+                    },
                   },
                 },
               },
-            },
-          };
+            }
+          );
 
           const res = await getWithQuery(query);
 
@@ -126,7 +92,7 @@ const TopicsByWeek = () => {
     setSelectedTopics(val);
   };
 
-  const handleClick = (evt) => {
+  const handleClick = () => {
     getQuery();
   };
 
@@ -134,9 +100,8 @@ const TopicsByWeek = () => {
     getTopicsQuery();
   }, []);
 
-  useEffect(() => {
-    getQuery();
-  }, [countryFilter, regionFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => getQuery(), [countryFilter, regionFilter]);
 
   return (
     <>
