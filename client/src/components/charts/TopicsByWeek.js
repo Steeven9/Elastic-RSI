@@ -12,8 +12,8 @@ const TopicsByWeek = () => {
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const isCountrySelected = countryFilter !== "Global";
-    const isRegionSelected = regionFilter !== "All";
+    const isCountrySelected = !countryFilter.includes("Global");
+    const isRegionSelected = !regionFilter.includes("All");
     const isTopicSelected = selectedTopics.length > 0;
 
     const barsData = [];
@@ -29,7 +29,7 @@ const TopicsByWeek = () => {
                         ...(isCountrySelected
                           ? [
                               {
-                                match: {
+                                terms: {
                                   country: countryFilter,
                                 },
                               },
@@ -38,7 +38,7 @@ const TopicsByWeek = () => {
                         ...(isRegionSelected
                           ? [
                               {
-                                match: {
+                                terms: {
                                   admin1: regionFilter,
                                 },
                               },

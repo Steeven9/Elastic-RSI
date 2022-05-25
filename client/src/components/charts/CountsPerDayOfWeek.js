@@ -9,8 +9,8 @@ const CountsPerDayOfWeek = () => {
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const isCountrySelected = countryFilter !== "Global";
-    const isRegionSelected = regionFilter !== "All";
+    const isCountrySelected = !countryFilter.includes("Global");
+    const isRegionSelected = !regionFilter.includes("All");
     
     const query = {
       ...(isCountrySelected || isRegionSelected 
@@ -21,7 +21,7 @@ const CountsPerDayOfWeek = () => {
                   ...(isCountrySelected
                     ? [
                         {
-                          match: {
+                          terms: {
                             country: countryFilter,
                           },
                         },
@@ -30,7 +30,7 @@ const CountsPerDayOfWeek = () => {
                   ...(isRegionSelected
                     ? [
                         {
-                          match: {
+                          terms: {
                             admin1: regionFilter,
                           },
                         },

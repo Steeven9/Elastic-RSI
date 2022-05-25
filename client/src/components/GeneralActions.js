@@ -68,6 +68,9 @@ const GeneralActions = () => {
           terms: {
             field: "admin1",
             size: 200,
+            order: {
+              _key: 'asc'
+            }
           },
         },
       },
@@ -97,8 +100,8 @@ const GeneralActions = () => {
     }
   };
 
-  const handleChangeRegion = (evt) => {
-    setRegionFilter(evt.target.value);
+  const handleChangeRegion = (evt, val) => {
+    setRegionFilter(val);
   };
 
   return (
