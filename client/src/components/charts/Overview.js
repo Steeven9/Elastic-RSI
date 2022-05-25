@@ -15,8 +15,8 @@ function Overview() {
 
 
   useEffect(async () => {
-    const isCountrySelected = !countryFilter.includes("Global");
-    const isRegionSelected = !regionFilter.includes("All");
+    const isCountrySelected = countryFilter.length > 0;
+    const isRegionSelected = regionFilter.length > 0;
     const query = {
       size: 0,
       ...(isCountrySelected || isRegionSelected ? {

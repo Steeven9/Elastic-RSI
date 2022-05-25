@@ -18,8 +18,8 @@ function WeekDayComparison() {
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   useEffect(async () => {
-    const isCountrySelected = !countryFilter.includes("Global");
-    const isRegionSelected = !regionFilter.includes("All");
+    const isCountrySelected = countryFilter.length > 0;
+    const isRegionSelected = regionFilter.length > 0;
     const query = {
       size: 0,
       ...(isCountrySelected || isRegionSelected
@@ -69,20 +69,22 @@ function WeekDayComparison() {
     const response = await getWithQuery(query);
     let values = new Array(7 * 24).fill(0);
     const numberHours = response.aggregations.by_hour.buckets.length;
-    const startDate = new Date(
-      response.aggregations.by_hour.buckets[0].key_as_string
-    );
-    const startWeekDayIndex = dateToWeekDayIndex(startDate);
-    const startHourIndex = dateToHourIndex(startDate);
-    let hourIndex = 24 * startWeekDayIndex + startHourIndex;
-    let hourCounter = new Array(7 * 24).fill(0);
-    for (let i = 0; i < numberHours; i++) {
-      values[hourIndex] += response.aggregations.by_hour.buckets[i].doc_count;
-      hourCounter[hourIndex] += 1;
-      hourIndex = (hourIndex + 1) % (7 * 24);
-    }
-    for (let i = 0; i < hourCounter.length; i++) {
-      values[i] = values[i] / hourCounter[i];
+    if (numberHours > 0) {
+      const startDate = new Date(
+        response.aggregations.by_hour.buckets[0].key_as_string
+      );
+      const startWeekDayIndex = dateToWeekDayIndex(startDate);
+      const startHourIndex = dateToHourIndex(startDate);
+      let hourIndex = 24 * startWeekDayIndex + startHourIndex;
+      let hourCounter = new Array(7 * 24).fill(0);
+      for (let i = 0; i < numberHours; i++) {
+        values[hourIndex] += response.aggregations.by_hour.buckets[i].doc_count;
+        hourCounter[hourIndex] += 1;
+        hourIndex = (hourIndex + 1) % (7 * 24);
+      }
+      for (let i = 0; i < hourCounter.length; i++) {
+        values[i] = values[i] / hourCounter[i];
+      }
     }
     const days = [
       "Monday",

@@ -1,6 +1,6 @@
 import React from "react";
-import TopicsView from "../charts/TopicsView";
 import Overview from "../charts/Overview";
+import TopicsView from "../charts/TopicsView";
 
 const GeneralViews = () => {
   return (

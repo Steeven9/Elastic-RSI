@@ -42,15 +42,14 @@ const GeneralActions = () => {
     const res = await getAggs(query);
 
     const resAgg = res.countries.buckets;
-    const countries = ["Global"];
-    const resArray = Object.keys(resAgg).forEach((key) => {
-      countries.push(resAgg[key].key);
+    const resArray = Object.keys(resAgg).map((key) => {
+     return resAgg[key].key;
     });
-    setCountries(countries);
+    setCountries(resArray);
   };
 
   const getRegions = async (country) => {
-    const isCountrySelected = !country.includes('Global');
+    const isCountrySelected = country.length > 0;
     const query = {
       ...(isCountrySelected ? {
         query: {
@@ -79,25 +78,20 @@ const GeneralActions = () => {
     const res = await getWithQuery(query);
     const resAgg = res.aggregations.regions.buckets;
 
-    const regions = ["All"];
-    const resArray = Object.keys(resAgg).forEach((key) => {
-      regions.push(resAgg[key].key);
+    const resArray = Object.keys(resAgg).map((key) => {
+      return resAgg[key].key;
     });
-    setRegions(regions);
+
+    setRegions(resArray);
   };
 
   useEffect(() => {
     getCountriesQuery();
-  }, [countryFilter]);
+  }, []);
 
   const handleChangeCountry = (evt, val) => {
     setCountryFilter(val);
-    if (!val.includes('Global')) {
-      console.log(val)
-      getRegions(val);
-    } else {
-      setRegions([])
-    }
+    getRegions(val);
   };
 
   const handleChangeRegion = (evt, val) => {

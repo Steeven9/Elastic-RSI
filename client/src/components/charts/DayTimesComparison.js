@@ -25,20 +25,20 @@ function DayTimesComparison() {
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   useEffect(async () => {
-    const isCountrySelected = !countryFilter.includes("Global");
-    const isRegionSelected = !regionFilter.includes("All");
+    const isCountrySelected = countryFilter.length > 0;
+    const isRegionSelected = regionFilter.length > 0;
     const query = {
       ...(isCountrySelected || isRegionSelected ? {
         query: {
           bool: {
             must: [
               ...(isCountrySelected ? [{
-                match: {
+                terms: {
                   country: countryFilter,
                 },
               }] : []),
               ...(isRegionSelected ? [{
-                match: {
+                terms: {
                   admin1: regionFilter,
                 },
               }] : [])
