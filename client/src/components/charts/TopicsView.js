@@ -9,8 +9,8 @@ const TopicsView = () => {
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const isCountrySelected = countryFilter !== 'Global'
-    const isRegionSelected = regionFilter !== 'All'
+    const isCountrySelected = !countryFilter.includes("Global");
+    const isRegionSelected = !regionFilter.includes("All");
 
     const query = {
       ...(isCountrySelected || isRegionSelected ? {

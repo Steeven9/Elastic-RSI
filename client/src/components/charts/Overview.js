@@ -1,9 +1,7 @@
-import React from "react";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Fragment } from "react";
 import ReactEcharts from "echarts-for-react";
-import { getWithQuery } from "../../API";
+import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { getWithQuery } from "../../API";
 
 function Overview() {
   const [baseData, setBaseData] = useState(undefined);
@@ -17,8 +15,8 @@ function Overview() {
 
 
   useEffect(async () => {
-    const isCountrySelected = countryFilter !== 'Global'
-    const isRegionSelected = regionFilter !== 'All'
+    const isCountrySelected = !countryFilter.includes("Global");
+    const isRegionSelected = !regionFilter.includes("All");
     const query = {
       size: 0,
       ...(isCountrySelected || isRegionSelected ? {
