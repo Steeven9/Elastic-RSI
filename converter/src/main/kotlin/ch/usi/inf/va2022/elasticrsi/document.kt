@@ -9,9 +9,12 @@ import io.github.mngsk.devicedetector.Detection
 import io.github.mngsk.devicedetector.DeviceDetector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.iakovlev.timeshape.TimeZoneEngine
 import uk.recurse.geocoding.reverse.ReverseGeocoder
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 
 fun parseLogLine(line: String): PartialDocument? {
     val entries = line.split(" ")
@@ -46,6 +49,7 @@ fun parseLogLine(line: String): PartialDocument? {
 suspend fun PartialDocument.augment(
     geocoder: ReverseGeocoder,
     deviceDetector: DeviceDetector,
+    timeZoneEngine: TimeZoneEngine,
 ): Document = withContext(Dispatchers.Default) {
     val dateTime = Config.Parser.DATE_FORMAT.format(date) +
             " " +
@@ -60,16 +64,26 @@ suspend fun PartialDocument.augment(
     val admin1 = geocoder.getAdmin1(location.lat, location.lon)
         .map { it.name() }
         .orElse("unknown")
-    val timeZone = country.flatMap { geocoder.getTimezone(it) }
-        .map { it.gmtOffset() }
-        .orElse(0f)
     val topics = RsiTopicUtil.buildTopicsFromPath(path)
-    val userAgent = deviceDetector.detect(deviceInfo)
+    val userAgent = deviceDetector.parseDeviceInfo(deviceInfo)
+
+    val localDateTime = timeZoneEngine.query(location.lat.toDouble(), location.lon.toDouble())
+        .map {
+            date.atTime(time)
+                .atZone(ZoneId.of("Europe/Amsterdam"))
+                .withZoneSameInstant(it)
+        }
+        .map {
+            Config.Parser.DATE_FORMAT.format(it.toLocalDate()) +
+                    " " +
+                    Config.Parser.TIME_FORMAT.format(it.toLocalTime())
+        }
+        .orElse("unknown")
 
     Document(
         dateTime = dateTime,
+        localDateTime = localDateTime,
         dayOfWeek = date.dayOfWeek.value,
-        timezone = timeZone,
         location = location,
         admin1 = admin1,
         continent = continent,
@@ -88,9 +102,9 @@ suspend fun PartialDocument.augment(
  */
 fun Document.toNdjson(): String {
     return "{\"index\": {}}\n{" +
-            "\"date\": \"$dateTime\", " +
+            "\"ch_date\": \"$dateTime\", " +
+            "\"local_date\": \"$localDateTime\", " +
             "\"day_of_week\": \"$dayOfWeek\", " +
-            "\"timezone\": \"$timezone\", " +
             "\"location\": {\"lat\": \"${location.lat}\", \"lon\": \"${location.lon}\"}, " +
             "\"continent\": \"$continent\", " +
             "\"country\": \"$country\", " +
@@ -99,9 +113,18 @@ fun Document.toNdjson(): String {
             "\"req_type\": \"$reqType\", " +
             "\"path\": \"$path\", " +
             "\"http_version\": \"$httpVersion\", " +
-            "\"user_agent\": ${userAgent.keywords()}, " +
+            "\"user_agent\": $userAgent, " +
             "\"topics\": [\"${topics.joinToString("\", \"")}\"] " +
             "}\n"
+}
+
+private fun DeviceDetector.parseDeviceInfo(deviceInfo: String): String {
+    return if (deviceInfo == "Intlayer-SrfHttpClient") {
+        // Keep intlayer-srfhttpclient as-is
+        "[\"Intlayer-SrfHttpClient\"]"
+    } else {
+        detect(deviceInfo).keywords()
+    }
 }
 
 private fun Detection.keywords(): String {
