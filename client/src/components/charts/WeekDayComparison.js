@@ -2,6 +2,7 @@ import ReactEcharts from "echarts-for-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
+import buildQuery from "../../utils/query";
 
 function dateToWeekDayIndex(date) {
   const index = date.getDay();
@@ -17,55 +18,31 @@ function WeekDayComparison() {
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
-  useEffect(async () => {
-    const isCountrySelected = countryFilter.length > 0;
-    const isRegionSelected = regionFilter.length > 0;
-    const query = {
-      size: 0,
-      ...(isCountrySelected || isRegionSelected
-        ? {
-            query: {
-              bool: {
-                must: [
-                  ...(isCountrySelected
-                    ? [
-                        {
-                          terms: {
-                            country: countryFilter,
-                          },
-                        },
-                      ]
-                    : []),
-                  ...(isRegionSelected
-                    ? [
-                        {
-                          terms: {
-                            admin1: regionFilter,
-                          },
-                        },
-                      ]
-                    : []),
-                ],
-              },
-            },
-          }
-        : {}),
-      aggs: {
-        by_hour: {
-          date_histogram: {
-            field: "date",
-            calendar_interval: "hour",
-          },
-        },
+  const getData = async () => {
+    const query = buildQuery(
+      {
+        country: countryFilter,
+        admin1: regionFilter,
       },
-      sort: [
-        {
-          date: {
-            order: "asc",
+      {
+        aggs: {
+          by_hour: {
+            date_histogram: {
+              field: "date",
+              calendar_interval: "hour",
+            },
           },
         },
-      ],
-    };
+        sort: [
+          {
+            date: {
+              order: "asc",
+            },
+          },
+        ],
+      }
+    );
+
     const response = await getWithQuery(query);
     let values = new Array(7 * 24).fill(0);
     const numberHours = response.aggregations.by_hour.buckets.length;
@@ -164,7 +141,10 @@ function WeekDayComparison() {
       }),
     };
     setOption(option);
-  }, [countryFilter, regionFilter]);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => getData(), [countryFilter, regionFilter]);
 
   return (
     <div

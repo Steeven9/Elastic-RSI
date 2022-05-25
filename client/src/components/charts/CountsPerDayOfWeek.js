@@ -1,6 +1,7 @@
 import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import buildQuery from "../../utils/query";
 import { getWithQuery } from "../../API";
 
 const CountsPerDayOfWeek = () => {
@@ -9,67 +10,41 @@ const CountsPerDayOfWeek = () => {
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const isCountrySelected = countryFilter.length > 0;
-    const isRegionSelected = regionFilter.length > 0;
-    
-    const query = {
-      ...(isCountrySelected || isRegionSelected 
-        ? {
-            query: {
-              bool: {
-                must: [
-                  ...(isCountrySelected
-                    ? [
-                        {
-                          terms: {
-                            country: countryFilter,
-                          },
-                        },
-                      ]
-                    : []),
-                  ...(isRegionSelected
-                    ? [
-                        {
-                          terms: {
-                            admin1: regionFilter,
-                          },
-                        },
-                      ]
-                    : []),
-                ],
-              },
-            },
-          }
-        : {}),
-      aggs: {
-        daysOfWeek: {
-          filters: {
+    const query = buildQuery(
+      {
+        country: countryFilter,
+        admin1: regionFilter,
+      },
+      {
+        aggs: {
+          daysOfWeek: {
             filters: {
-              1: { match: { day_of_week: "1" } },
-              2: { match: { day_of_week: "2" } },
-              3: { match: { day_of_week: "3" } },
-              4: { match: { day_of_week: "4" } },
-              5: { match: { day_of_week: "5" } },
-              6: { match: { day_of_week: "6" } },
-              7: { match: { day_of_week: "7" } },
+              filters: {
+                1: { match: { day_of_week: "1" } },
+                2: { match: { day_of_week: "2" } },
+                3: { match: { day_of_week: "3" } },
+                4: { match: { day_of_week: "4" } },
+                5: { match: { day_of_week: "5" } },
+                6: { match: { day_of_week: "6" } },
+                7: { match: { day_of_week: "7" } },
+              },
             },
           },
         },
-      },
-    };
+      }
+    );
 
     const res = await getWithQuery(query);
     const resAgg = res.aggregations.daysOfWeek.buckets;
-    
+
     const resArray = Object.keys(resAgg).map((key) => {
       return resAgg[key].doc_count;
     });
     setdata(resArray);
   };
 
-  useEffect(() => {
-    getQuery();
-  }, [countryFilter, regionFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => getQuery(), [countryFilter, regionFilter]);
 
   return chartData.length > 0 ? (
     <div>

@@ -5,7 +5,7 @@ import {
   CssBaseline,
   IconButton,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import React, { useCallback } from "react";
@@ -13,10 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as actions from "./actions";
 import AppDrawer from "./components/AppDrawer";
 import ChartTabs from "./components/ChartTabs";
-import GeneralActions from "./components/GeneralActions";
 import theme from "./Theme";
-
-const isProd = process.env.REACT_APP_PROD;
 
 const App = () => {
   const dispatch = useDispatch();
@@ -61,7 +58,6 @@ const App = () => {
           <AppDrawer />
           <Box component="main">
             <Toolbar />
-            <GeneralActions />
             <ChartTabs />
           </Box>
         </div>

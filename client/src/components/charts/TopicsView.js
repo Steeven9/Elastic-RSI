@@ -2,44 +2,30 @@ import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
+import buildQuery from "../../utils/query";
 
 const TopicsView = () => {
-  const [chartData, setdata] = useState([]);
+  const [chartData, setData] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const isCountrySelected = countryFilter.length > 0;
-    const isRegionSelected = regionFilter.length > 0;
-
-    const query = {
-      ...(isCountrySelected || isRegionSelected ? {
-        query: {
-          bool: {
-            must: [
-              ...(isCountrySelected ? [{
-                match: {
-                  country: countryFilter,
-                },
-              }] : []),
-              ...(isRegionSelected ? [{
-                match: {
-                  admin1: regionFilter,
-                },
-              }] : [])
-            ],
-          },
-        }
-      } : {}),
-      aggs: {
-        daysOfWeek: {
-          terms: {
-            field: "topics",
-            size: 1000,
+    const query = buildQuery(
+      {
+        country: countryFilter,
+        admin1: regionFilter,
+      },
+      {
+        aggs: {
+          daysOfWeek: {
+            terms: {
+              field: "topics",
+              size: 1000,
+            },
           },
         },
-      },
-    }
+      }
+    );
 
     const res = await getWithQuery(query);
     let resAgg = {};
@@ -48,7 +34,7 @@ const TopicsView = () => {
     const resArray = Object.keys(resAgg).map((key) => {
       return { name: resAgg[key].key, value: resAgg[key].doc_count };
     });
-    setdata(resArray);
+    setData(resArray);
   };
 
   const getLevelOption = () => {
@@ -74,9 +60,8 @@ const TopicsView = () => {
     ];
   };
 
-  useEffect(() => {
-    getQuery();
-  }, [countryFilter, regionFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => getQuery(), [countryFilter, regionFilter]);
 
   return chartData.length > 0 ? (
     <div>

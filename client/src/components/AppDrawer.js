@@ -48,7 +48,7 @@ const AppDrawer = () => {
   const list = () => (
     <Box sx={{ width: 250, overflow: "auto" }} variant="permanent">
       <List>
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <ListItem key={item.key} disablePadding>
             <ListItemButton onClick={() => setPage(item.key)}>
               <ListItemText primary={item.name} />
