@@ -76,9 +76,8 @@ const TopicsByWeek = () => {
           };
 
           const res = await getWithQuery(query);
-          let resAgg = {};
 
-          resAgg = res.aggregations.daysOfWeek.buckets;
+          const resAgg = res.aggregations.daysOfWeek.buckets;
           const resArray = Object.keys(resAgg).map((key) => {
             return resAgg[key].doc_count;
           });

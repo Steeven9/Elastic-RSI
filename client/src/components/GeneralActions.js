@@ -50,12 +50,19 @@ const GeneralActions = () => {
   };
 
   const getRegions = async (country) => {
+    const isCountrySelected = !country.includes('Global');
     const query = {
-      query: {
-        match: {
-          country: country,
-        },
-      },
+      ...(isCountrySelected ? {
+        query: {
+          bool: {
+            must: {
+              terms: {
+                country: country
+              }
+            }
+          }
+        }
+      } : {}),
       aggs: {
         regions: {
           terms: {
@@ -82,8 +89,11 @@ const GeneralActions = () => {
 
   const handleChangeCountry = (evt, val) => {
     setCountryFilter(val);
-    if (evt.target.value !== "All") {
-      getRegions(evt.target.value);
+    if (!val.includes('Global')) {
+      console.log(val)
+      getRegions(val);
+    } else {
+      setRegions([])
     }
   };
 
@@ -92,14 +102,15 @@ const GeneralActions = () => {
   };
 
   return (
-    <Grid container spacing={3}>
+    <Grid sx={{padding: 10,border: '1px solid'}} container justifyContent='space-between'>
       <Grid item xs={6} md={12}>
         <Typography align="center" variant="h4">
           General Filters
         </Typography>
       </Grid>
-      <Grid item xs={6} md={6}>
+      <Grid item xs={6} md={4}>
         <Autocomplete
+          getOptionDisabled={() => (countryFilter.length > 3 ? true : false)}
           multiple
           id="tags-standard"
           onChange={handleChangeCountry}
@@ -114,7 +125,7 @@ const GeneralActions = () => {
           )}
         />
       </Grid>
-      <Grid item xs={6} md={6}>
+      <Grid item xs={6} md={4} >
       <Autocomplete
           multiple
           id="tags-standard"
