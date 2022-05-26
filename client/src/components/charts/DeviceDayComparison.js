@@ -1,8 +1,7 @@
-import React from "react";
-import { useState, useEffect } from "react";
 import ReactEcharts from "echarts-for-react";
-import { getWithQuery } from "../../API";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
 
 function dateToHourIndex(date) {
@@ -13,68 +12,70 @@ function getDevices() {
   return ["desktop", "smartphone", "tablet", "tv", "portable media player"];
 }
 
-function DeviceDayComparison() {
+const DeviceDayComparison = () => {
   const [data, setData] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
-  useEffect(() => {
-    async function fetchData() {
-      let result = new Array(getDevices().length);
-      await Promise.all(
-        getDevices().map(async (device, i) => {
-          const query = buildQuery(
-            {
-              country: countryFilter,
-              admin1: regionFilter,
-              user_agent: [device],
-            },
-            {
-              aggs: {
-                by_hour: {
-                  date_histogram: {
-                    field: "ch_date",
-                    calendar_interval: "hour",
-                  },
+  const fetchData = async () => {
+    let result = new Array(getDevices().length);
+    await Promise.all(
+      getDevices().map(async (device, i) => {
+        const query = buildQuery(
+          {
+            country: countryFilter,
+            admin1: regionFilter,
+            user_agent: [device],
+          },
+          {
+            aggs: {
+              by_hour: {
+                date_histogram: {
+                  field: "ch_date",
+                  calendar_interval: "hour",
                 },
               },
-              sort: [
-                {
-                  ch_date: {
-                    order: "asc",
-                  },
+            },
+            sort: [
+              {
+                ch_date: {
+                  order: "asc",
                 },
-              ],
-            }
-          );
-          const response = await getWithQuery(query);
-          let values = new Array(24).fill(0);
-          const numberHours = response.aggregations.by_hour.buckets.length;
-          if (numberHours > 0) {
-            const startDate = new Date(
-              response.aggregations.by_hour.buckets[0].key_as_string
-            );
-            let hourIndex = dateToHourIndex(startDate);
-            let hourCounter = new Array(24).fill(0);
-            for (let i = 0; i < numberHours; i++) {
-              values[hourIndex] +=
-                response.aggregations.by_hour.buckets[i].doc_count;
-              hourCounter[hourIndex] += 1;
-              hourIndex = (hourIndex + 1) % 24;
-            }
-            for (let i = 0; i < hourCounter.length; i++) {
-              values[i] = values[i] / hourCounter[i];
-            }
+              },
+            ],
           }
-          result[i] = {
-            device: device,
-            counts: values,
-          };
-        })
-      );
-      setData(result);
-    }
+        );
+        const response = await getWithQuery(query);
+        let values = new Array(24).fill(0);
+        const numberHours = response.aggregations.by_hour.buckets.length;
+        if (numberHours > 0) {
+          const startDate = new Date(
+            response.aggregations.by_hour.buckets[0].key_as_string
+          );
+          let hourIndex = dateToHourIndex(startDate);
+          let hourCounter = new Array(24).fill(0);
+          for (let i = 0; i < numberHours; i++) {
+            values[hourIndex] +=
+              response.aggregations.by_hour.buckets[i].doc_count;
+            hourCounter[hourIndex] += 1;
+            hourIndex = (hourIndex + 1) % 24;
+          }
+          for (let i = 0; i < hourCounter.length; i++) {
+            values[i] = values[i] / hourCounter[i];
+          }
+        }
+        result[i] = {
+          device: device,
+          counts: values,
+        };
+      })
+    );
+    setData(result);
+  };
+
+  useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countryFilter, regionFilter]);
 
   return (
@@ -159,6 +160,6 @@ function DeviceDayComparison() {
       )}
     </div>
   );
-}
+};
 
 export default DeviceDayComparison;
