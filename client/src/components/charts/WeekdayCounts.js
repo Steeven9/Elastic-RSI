@@ -16,6 +16,18 @@ function dateToWeekDayIndex(date) {
   return (index + 6) % 7;
 }
 
+function getWeekDays() {
+  return [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+}
+
 function WeekDayCounts() {
   const [rows, setRows] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
@@ -57,15 +69,7 @@ function WeekDayCounts() {
         counts[weekDayIndex] += 1;
         weekDayIndex = (weekDayIndex + 1) % 7;
       }
-      const result = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-      ].map((dayName, dayIndex) => {
+      const result = getWeekDays().map((dayName, dayIndex) => {
         return {
           name: dayName,
           count: counts[dayIndex],
@@ -85,7 +89,7 @@ function WeekDayCounts() {
       }}
     >
       {rows ? (
-        <TableContainer sx={{ width: "20%" }} component={Paper}>
+        <TableContainer sx={{ width: "25%" }} component={Paper}>
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>

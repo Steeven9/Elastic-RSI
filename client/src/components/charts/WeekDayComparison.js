@@ -13,6 +13,18 @@ function dateToHourIndex(date) {
   return date.getHours();
 }
 
+function getWeekDays() {
+  return [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+}
+
 function WeekDayComparison() {
   const [option, setOption] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
@@ -62,15 +74,6 @@ function WeekDayComparison() {
         values[i] = values[i] / hourCounter[i];
       }
     }
-    const days = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ];
     const option = {
       grid: {
         left: "10%",
@@ -115,7 +118,7 @@ function WeekDayComparison() {
         },
         type: "value",
       },
-      series: days.map((dayName, dayIndex) => {
+      series: getWeekDays().map((dayName, dayIndex) => {
         return {
           name: dayName,
           type: "line",
