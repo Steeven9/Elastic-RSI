@@ -40,3 +40,17 @@ export const getAggs = async (query) => {
     console.error(err);
   }
 };
+
+export const getCount = async (query) => {
+  try {
+    const res = await axios.post(
+      `api/elastic/count`,
+      { ...query },
+      { headers: headers }
+    );
+
+    return res.data;
+  } catch (err) {
+    console.error(err);
+  }
+};

@@ -35,12 +35,12 @@ function DayTimesComparison() {
         aggs: {
           by_hour: {
             date_histogram: {
-              field: "date",
+              field: "ch_date",
               calendar_interval: "hour",
             },
           },
         },
-        sort: [{ date: { order: "asc" } }],
+        sort: [{ ch_date: { order: "asc" } }],
       }
     );
 
