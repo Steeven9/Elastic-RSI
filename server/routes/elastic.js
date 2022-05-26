@@ -141,7 +141,7 @@ router.get("/getAllDataUNSAFE", async (req, res) => {
     );
     pitId = response.id;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).send(err);
   }
 
@@ -168,6 +168,7 @@ router.get("/getAllDataUNSAFE", async (req, res) => {
     results = results.concat(response.hits.hits);
 
     // Paginate results - we let it gracefully fail on the last one
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       let searchAfter = response.hits.hits[response.hits.hits.length - 1].sort;
       response = await client.search(
@@ -184,7 +185,7 @@ router.get("/getAllDataUNSAFE", async (req, res) => {
       results = results.concat(response.hits.hits);
     }
   } catch (err) {
-    console.log("[getAll] " + err);
+    console.error("[getAll] " + err);
   } finally {
     res.status(200).json(results);
   }

@@ -1,9 +1,14 @@
-import React from "react";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Fragment } from "react";
 import ReactEcharts from "echarts-for-react";
-import { getWithQuery } from "../../API";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useSelector } from "react-redux";
+import { getWithQuery } from "../../API";
+import buildQuery from "../../utils/query";
 
 function Overview() {
   const [baseData, setBaseData] = useState(undefined);
@@ -15,47 +20,32 @@ function Overview() {
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
-
-  useEffect(async () => {
-    const isCountrySelected = countryFilter !== 'Global'
-    const isRegionSelected = regionFilter !== 'All'
-    const query = {
-      size: 0,
-      ...(isCountrySelected || isRegionSelected ? {
-        query: {
-          bool: {
-            must: [
-              ...(isCountrySelected ? [{
-                match: {
-                  country: countryFilter,
-                },
-              }] : []),
-              ...(isRegionSelected ? [{
-                match: {
-                  admin1: regionFilter,
-                },
-              }] : [])
-            ],
-          },
-        }
-      } : {}),
-      aggs: {
-        by_minute: {
-          date_histogram: {
-            field: "date",
-            calendar_interval: "minute",
-          },
-        },
+  const getData = async () => {
+    const query = buildQuery(
+      {
+        country: countryFilter,
+        admin1: regionFilter,
       },
-      _source: false,
-      sort: [
-        {
-          date: {
-            order: "asc",
+      {
+        _source: false,
+        aggs: {
+          by_minute: {
+            date_histogram: {
+              field: "date",
+              calendar_interval: "minute",
+            },
           },
         },
-      ],
-    };
+        sort: [
+          {
+            date: {
+              order: "asc",
+            },
+          },
+        ],
+      }
+    );
+
     const response = await getWithQuery(query);
     const numberMinutes = response.aggregations.by_minute.buckets.length;
     const result = {
@@ -74,7 +64,10 @@ function Overview() {
       ),
     };
     setBaseData(result);
-  }, [countryFilter, regionFilter]);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => getData(), [countryFilter, regionFilter]);
 
   useEffect(() => {
     if (typeof baseData !== "undefined") {
@@ -159,16 +152,16 @@ function Overview() {
     if (isDrillingDownFromDaysToHours(sourceReference.current, indexRange)) {
       const start = new Date(
         sourceReference.current.timeLevelRanges.base.days.start.getTime() +
-        (indexRange.start -
-          sourceReference.current.timeLevelIndices.base.days.start) *
-        24 *
-        60 *
-        60 *
-        1000
+          (indexRange.start -
+            sourceReference.current.timeLevelIndices.base.days.start) *
+            24 *
+            60 *
+            60 *
+            1000
       );
       const end = new Date(
         start.getTime() +
-        (indexRange.end - indexRange.start) * 24 * 60 * 60 * 1000
+          (indexRange.end - indexRange.start) * 24 * 60 * 60 * 1000
       );
       const dayRange = {
         start: start,
@@ -197,7 +190,7 @@ function Overview() {
     ) {
       const start = new Date(
         indexRange.start * 60 * 60 * 1000 +
-        sourceReference.current.currentData.x[0].getTime()
+          sourceReference.current.currentData.x[0].getTime()
       );
       const end = new Date(
         (indexRange.end - indexRange.start) * 60 * 60 * 1000 + start.getTime()

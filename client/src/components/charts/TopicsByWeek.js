@@ -3,65 +3,47 @@ import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getAggs, getWithQuery } from "../../API";
+import buildQuery from "../../utils/query";
 
 const TopicsByWeek = () => {
   const [chartData, setdata] = useState([]);
   const [topics, setTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const selectedCountry = {
-      term: {
-        country: {
-          value: countryFilter,
-        },
-      },
-    };
-
-    let query = {
-      query: {
-        bool: {
-          must: [],
-        },
-      },
-      aggs: {
-        daysOfWeek: {
-          filters: {
-            filters: {
-              1: { match: { day_of_week: "1" } },
-              2: { match: { day_of_week: "2" } },
-              3: { match: { day_of_week: "3" } },
-              4: { match: { day_of_week: "4" } },
-              5: { match: { day_of_week: "5" } },
-              6: { match: { day_of_week: "6" } },
-              7: { match: { day_of_week: "7" } },
-            },
-          },
-        },
-      },
-    };
-
     const barsData = [];
     await Promise.all(
       selectedTopics.map(async (el) => {
         try {
-          const obj = {
-            term: {
-              topics: el,
+          const query = buildQuery(
+            {
+              country: countryFilter,
+              admin1: regionFilter,
             },
-          };
-
-          if (countryFilter !== "Global") {
-            query.query.bool.must = [selectedCountry, obj];
-          } else {
-            query.query.bool.must = [obj];
-          }
+            {
+              aggs: {
+                daysOfWeek: {
+                  filters: {
+                    filters: {
+                      1: { match: { day_of_week: "1" } },
+                      2: { match: { day_of_week: "2" } },
+                      3: { match: { day_of_week: "3" } },
+                      4: { match: { day_of_week: "4" } },
+                      5: { match: { day_of_week: "5" } },
+                      6: { match: { day_of_week: "6" } },
+                      7: { match: { day_of_week: "7" } },
+                    },
+                  },
+                },
+              },
+            }
+          );
 
           const res = await getWithQuery(query);
-          let resAgg = {};
 
-          resAgg = res.aggregations.daysOfWeek.buckets;
+          const resAgg = res.aggregations.daysOfWeek.buckets;
           const resArray = Object.keys(resAgg).map((key) => {
             return resAgg[key].doc_count;
           });
@@ -92,6 +74,7 @@ const TopicsByWeek = () => {
         terms: {
           field: "topics",
           size: 10000,
+          min_doc_count: 50,
         },
       },
     };
@@ -109,13 +92,16 @@ const TopicsByWeek = () => {
     setSelectedTopics(val);
   };
 
-  const handleClick = (evt) => {
+  const handleClick = () => {
     getQuery();
   };
 
   useEffect(() => {
     getTopicsQuery();
-  }, [countryFilter]);
+  }, []);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => getQuery(), [countryFilter, regionFilter]);
 
   return (
     <>

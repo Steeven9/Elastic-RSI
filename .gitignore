@@ -50,3 +50,5 @@ build/
 *.log.gz
 kibanadata/
 esdata01/
+esdata02/
+certs/

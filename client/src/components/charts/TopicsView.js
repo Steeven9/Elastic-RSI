@@ -1,48 +1,40 @@
 import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { getAggs } from "../../API";
+import { getWithQuery } from "../../API";
+import buildQuery from "../../utils/query";
 
 const TopicsView = () => {
-  const [chartData, setdata] = useState([]);
+  const [chartData, setData] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    let query = {
-      daysOfWeek: {
-        terms: {
-          field: "topics",
-          size: 1000,
-        },
+    const query = buildQuery(
+      {
+        country: countryFilter,
+        admin1: regionFilter,
       },
-    };
-    if (countryFilter !== "Global") {
-      query = {
-        daysOfWeek: {
-          filter: { term: { country: countryFilter } },
-          aggs: {
-            daysOfWeek: {
-              terms: {
-                field: "topics",
-                size: 1000,
-              },
+      {
+        aggs: {
+          daysOfWeek: {
+            terms: {
+              field: "topics",
+              size: 1000,
             },
           },
         },
-      };
-    }
+      }
+    );
 
-    const res = await getAggs(query);
+    const res = await getWithQuery(query);
     let resAgg = {};
-    if (countryFilter !== "Global") {
-      resAgg = res.daysOfWeek.daysOfWeek.buckets;
-    } else {
-      resAgg = res.daysOfWeek.buckets;
-    }
+
+    resAgg = res.aggregations.daysOfWeek.buckets;
     const resArray = Object.keys(resAgg).map((key) => {
       return { name: resAgg[key].key, value: resAgg[key].doc_count };
     });
-    setdata(resArray);
+    setData(resArray);
   };
 
   const getLevelOption = () => {
@@ -68,9 +60,8 @@ const TopicsView = () => {
     ];
   };
 
-  useEffect(() => {
-    getQuery();
-  }, [countryFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => getQuery(), [countryFilter, regionFilter]);
 
   return chartData.length > 0 ? (
     <div>

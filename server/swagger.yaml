@@ -15,26 +15,195 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+
   schemas:
-    QueryResults: # TODO
+    Documents:
+      type: array
+      items:
+        type: object
+        properties:
+          _index:
+            type: string
+            example: rsi
+          _id:
+            type: string
+            example: 2Qge74ABTHsVHy639Ltc
+          _score:
+            type: integer
+            example: 1
+          _source:
+            type: object
+            properties:
+              date:
+                type: string
+                example: "2022-04-15 03:13:19"
+              day_of_week:
+                type: string
+                example: 5
+              timezone:
+                type: string
+                example: 1.0
+              location:
+                type: object
+                properties:
+                  lat:
+                    type: string
+                    example: 48.8582
+                  lon:
+                    type: string
+                    example: 2.3387
+              continent:
+                type: string
+                example: EU
+              country:
+                type: string
+                example: FR
+              admin1:
+                type: string
+                example: Paris
+              masked_ip:
+                type: string
+                example: s6oXf7qCAW6sab/dDIQObSfm9w/3fJ5qSHWyqA==
+              req_type:
+                type: string
+                example: GET
+              path:
+                type: string
+                example: /kids/scelta/grandi/player/?id=14974548
+              http_version:
+                type: string
+                example: HTTP/1.1
+              user_agent:
+                type: array
+                items:
+                  type: string
+                  example: Mozilla 5.0
+              topics:
+                type: array
+                items:
+                  type: string
+                  example: kids
+
+    AggregationFilter:
       type: object
-    Documents: # TODO
+      properties:
+        aggregation1:
+          type: object
+          properties:
+            filters:
+              type: object
+              properties:
+                filters:
+                  type: object
+                  properties:
+                    bucket1:
+                      type: object
+                      properties:
+                        match:
+                          type: object
+                          properties:
+                            day_of_week:
+                              type: integer
+                              example: 1
+                    bucket2:
+                      type: object
+                      properties:
+                        match:
+                          type: object
+                          properties:
+                            day_of_week:
+                              type: integer
+                              example: 2
+
+    CountQuery:
       type: object
+      properties:
+        query:
+          type: object
+          properties:
+            wildcard:
+              type: object
+              properties:
+                device_info.keyword:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                      example: "*Android*"
+
+    Query:
+      type: object
+      properties:
+        query:
+          type: object
+          properties:
+            match_all:
+              type: object
+
+    QueryResult:
+      type: object
+      properties:
+        took:
+          type: integer
+          example: 3
+        timed_out:
+          type: boolean
+          example: false
+        _shards:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 1
+            successful:
+              type: integer
+              example: 1
+            skipped:
+              type: integer
+              example: 0
+            failed:
+              type: integer
+              example: 0
+        hits:
+          type: object
+          properties:
+            total:
+              type: object
+              properties:
+                value:
+                  type: integer
+                  example: 10000
+                relation:
+                  type: string
+                  example: gte
+            max_score:
+              type: integer
+              example: 1
+            hits:
+              $ref: "#/components/schemas/Documents"
+
     Buckets:
       type: object
       properties:
-        aggregation(s):
+        aggregation1:
           type: object
           properties:
             buckets:
               type: object
               properties:
-                bucket_number:
+                bucket1:
                   type: object
                   properties:
                     doc_count:
                       type: integer
                       example: 69420
+                bucket2:
+                  type: object
+                  properties:
+                    doc_count:
+                      type: integer
+                      example: 1337
+
     ClusterStatus:
       type: object
       properties:
@@ -43,16 +212,16 @@ components:
           example: soulsbros
         status:
           type: string
-          example: yellow
+          example: green
         timed_out:
-          type: bool
+          type: boolean
           example: false
         number_of_nodes:
           type: integer
-          example: 1
+          example: 2
         number_of_data_nodes:
           type: integer
-          example: 1
+          example: 2
         active_primary_shards:
           type: integer
           example: 28
@@ -67,7 +236,7 @@ components:
           example: 0
         unassigned_shards:
           type: integer
-          example: 2
+          example: 0
         delayed_unassigned_shards:
           type: integer
           example: 0
@@ -82,7 +251,7 @@ components:
           example: 0
         active_shards_percent_as_number:
           type: integer
-          example: 93.33333333333333
+          example: 100
 
 paths:
   # Cluster/server endpoints
@@ -92,7 +261,7 @@ paths:
       tags:
         - cluster
       responses:
-        "200":
+        200:
           description: OK
           content:
             text/plain:
@@ -106,12 +275,18 @@ paths:
       tags:
         - cluster
       responses:
-        "200":
+        200:
           description: The cluster status
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClusterStatus"
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
 
   # Actual ElasticSearch endpoints
   /api/elastic/aggs:
@@ -121,20 +296,33 @@ paths:
         - elastic
       security:
         - bearerAuth: []
+      requestBody:
+        description: The aggregation filter
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AggregationFilter"
       responses:
-        "200":
+        200:
           description: The buckets
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Buckets"
-        "401":
+        401:
           description: Auth error
           content:
             text/plain:
               schema:
                 type: string
                 example: Missing or malformed auth token
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
 
   /api/elastic/count:
     post:
@@ -143,21 +331,34 @@ paths:
         - elastic
       security:
         - bearerAuth: []
+      requestBody:
+        description: The query
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CountQuery"
       responses:
-        "200":
+        200:
           description: The document count
           content:
             text/plain:
               schema:
                 type: integer
                 example: 69420
-        "401":
+        401:
           description: Auth error
           content:
             text/plain:
               schema:
                 type: string
                 example: Missing or malformed auth token
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
 
   /api/elastic/get:
     post:
@@ -166,20 +367,33 @@ paths:
         - elastic
       security:
         - bearerAuth: []
+      requestBody:
+        description: The query
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Query"
       responses:
-        "200":
+        200:
           description: The query results
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/QueryResults"
-        "401":
+                $ref: "#/components/schemas/QueryResult"
+        401:
           description: Auth error
           content:
             text/plain:
               schema:
                 type: string
                 example: Missing or malformed auth token
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
 
   /api/elastic/getAll:
     get:
@@ -189,19 +403,25 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        200:
           description: The documents
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Documents"
-        "401":
+        401:
           description: Auth error
           content:
             text/plain:
               schema:
                 type: string
                 example: Missing or malformed auth token
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
 
   /api/elastic/getAllDataUNSAFE:
     get:
@@ -212,16 +432,22 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        200:
           description: The documents
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Documents"
-        "401":
+        401:
           description: Auth error
           content:
             text/plain:
               schema:
                 type: string
                 example: Missing or malformed auth token
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
