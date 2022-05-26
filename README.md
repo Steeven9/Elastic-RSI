@@ -83,3 +83,11 @@ See [https://elastic-rsi.soulsbros.ch/api/docs](https://elastic-rsi.soulsbros.ch
 [https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup.html](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup.html)
 
 [https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html)
+
+## Known limitations/bugs
+
+Date/times might be off due to the DST mess; moreover, we use an external library for timezones
+which might or might not be correct.
+
+Our Elasticsearch instance doesn't have replica shards for performance reasons,
+but in a production environment it should be enabled.

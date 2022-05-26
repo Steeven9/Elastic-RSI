@@ -86,7 +86,7 @@ object RsiTopicUtil {
             }
             .filter {
                 // Skip scripts and parameters
-                !it.startsWith("&") && it.endsWith(".jsp")
+                !it.startsWith("&") && !it.endsWith(".jsp")
             }
             .filter {
                 // Skip words in blacklist and integer-only values

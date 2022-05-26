@@ -8,8 +8,6 @@ servers:
   - url: https://elastic-rsi.soulsbros.ch
   - url: http://localhost:4000
 
-# TODO req bodies and result schemas
-
 components:
   securitySchemes:
     bearerAuth:
@@ -34,15 +32,15 @@ components:
           _source:
             type: object
             properties:
-              date:
+              ch_date:
                 type: string
                 example: "2022-04-15 03:13:19"
+              local_date:
+                type: string
+                example: "2022-04-15 04:13:19"
               day_of_week:
-                type: string
+                type: integer
                 example: 5
-              timezone:
-                type: string
-                example: 1.0
               location:
                 type: object
                 properties:

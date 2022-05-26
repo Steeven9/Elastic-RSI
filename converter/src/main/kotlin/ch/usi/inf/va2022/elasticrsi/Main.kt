@@ -4,6 +4,7 @@ import io.github.mngsk.devicedetector.DeviceDetector
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.iakovlev.timeshape.TimeZoneEngine
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
@@ -52,6 +53,7 @@ class Main : Callable<Int> {
     override fun call(): Int = runBlocking {
         val geocoder = ReverseGeocoder()
         val deviceDetector = DeviceDetector.DeviceDetectorBuilder().build()
+        val timeZoneEngine = TimeZoneEngine.initialize()
         Output(outputPath, entriesPerFile).use { output ->
             val chan = Channel<String>(Config.Output.CHANNEL_SIZE)
 
@@ -66,7 +68,7 @@ class Main : Callable<Int> {
                                 System.err.println("Skipping malformed log line in file ${path.fileName}:\t$line")
                             }
                         } else {
-                            chan.send(partialDocument.augment(geocoder, deviceDetector).toNdjson())
+                            chan.send(partialDocument.augment(geocoder, deviceDetector, timeZoneEngine).toNdjson())
                         }
                     }
                 }

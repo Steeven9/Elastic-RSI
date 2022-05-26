@@ -1,17 +1,21 @@
 {
   "properties": {
-    "date": {
+    "ch_date": {
       "type": "date",
       "format": "yyyy-MM-dd HH:mm:ss"
     },
-    "timezone": {
-      "type": "float"
+    "local_date": {
+      "type": "date",
+      "format": "yyyy-MM-dd HH:mm:ss"
+    },
+    "day_of_week": {
+      "type": "integer"
     },
     "location": {
       "type": "geo_point"
     },
     "continent": {
-        "type": "keyword"
+      "type": "keyword"
     },
     "country": {
       "type": "keyword"

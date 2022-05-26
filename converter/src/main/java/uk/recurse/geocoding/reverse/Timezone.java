@@ -14,7 +14,7 @@ public class Timezone {
     private Timezone(String[] row) {
         countryCode = row[0];
         timezoneId = row[1];
-        gmtOffset = Float.parseFloat(row[2]);
+        gmtOffset = Float.parseFloat(row[4]);
     }
 
     public String countryCode() {
