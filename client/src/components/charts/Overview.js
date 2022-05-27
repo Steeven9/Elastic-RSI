@@ -27,25 +27,24 @@ function Overview() {
         admin1: regionFilter,
       },
       {
-        _source: false,
+        size: 0,
         aggs: {
           by_minute: {
             date_histogram: {
-              field: "date",
+              field: "ch_date",
               calendar_interval: "minute",
             },
           },
         },
         sort: [
           {
-            date: {
+            ch_date: {
               order: "asc",
             },
           },
         ],
       }
     );
-
     const response = await getWithQuery(query);
     const numberMinutes = response.aggregations.by_minute.buckets.length;
     const result = {

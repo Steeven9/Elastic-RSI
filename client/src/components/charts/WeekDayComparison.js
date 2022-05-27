@@ -13,6 +13,18 @@ function dateToHourIndex(date) {
   return date.getHours();
 }
 
+function getWeekDays() {
+  return [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+}
+
 function WeekDayComparison() {
   const [option, setOption] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
@@ -28,21 +40,20 @@ function WeekDayComparison() {
         aggs: {
           by_hour: {
             date_histogram: {
-              field: "date",
+              field: "ch_date",
               calendar_interval: "hour",
             },
           },
         },
         sort: [
           {
-            date: {
+            ch_date: {
               order: "asc",
             },
           },
         ],
       }
     );
-
     const response = await getWithQuery(query);
     let values = new Array(7 * 24).fill(0);
     const numberHours = response.aggregations.by_hour.buckets.length;
@@ -63,15 +74,6 @@ function WeekDayComparison() {
         values[i] = values[i] / hourCounter[i];
       }
     }
-    const days = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ];
     const option = {
       grid: {
         left: "10%",
@@ -116,7 +118,7 @@ function WeekDayComparison() {
         },
         type: "value",
       },
-      series: days.map((dayName, dayIndex) => {
+      series: getWeekDays().map((dayName, dayIndex) => {
         return {
           name: dayName,
           type: "line",
@@ -159,44 +161,6 @@ function WeekDayComparison() {
       )}
     </div>
   );
-  /*
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        const hourLabels = new Array(24).fill(0).map((_, i) => `${new String(i).padStart(2, '0')}:00`)
-        let result = {
-            title: new Array(days.length),
-            singleAxis: new Array(days.length),
-            series: new Array(days.length),
-            tooltip: {
-                position: 'top'
-            }
-        }
-        for (let dayIndex = 0; dayIndex < days.length; dayIndex++) {
-            result.title[dayIndex] = {
-                textBaseline: 'middle',
-                top: `${((dayIndex + 0.5) * 100) / 7}%`,
-                text: days[dayIndex]
-            }
-            result.singleAxis[dayIndex] = {
-                left: 150,
-                type: 'category',
-                boundaryGap: false,
-                data: hourLabels,
-                top: `${(dayIndex * 100) / 7 + 5}%`,
-                height: `${100 / 7 - 10}%`,
-                axisLabel: {
-                    interval: 2
-                }
-            }
-            result.series[dayIndex] = {
-                singleAxisIndex: dayIndex,
-                coordinateSystem: 'singleAxis',
-                type: 'scatter',
-                symbolSize: (dataItem) => dataItem[1] / scatterPointScale,
-                data: values.slice(dayIndex * 24, dayIndex * 24 + 24).map((e, i) => [i, e])
-            }
-        }
-        setOption(result)
-    */
 }
 
 export default WeekDayComparison;
