@@ -1,19 +1,23 @@
 import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import buildQuery from "../../utils/query";
 import { getWithQuery } from "../../API";
+import buildQuery from "../../utils/query";
 
 const CountsPerDayOfWeek = () => {
   const [chartData, setdata] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+  const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
+  const deviceFilter = useSelector((st) => st.generalReducer.deviceFilter);
 
   const getQuery = async () => {
     const query = buildQuery(
       {
         country: countryFilter,
         admin1: regionFilter,
+        topics: topicFilter,
+        user_agent: deviceFilter,
       },
       {
         aggs: {

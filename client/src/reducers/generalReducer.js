@@ -4,6 +4,8 @@ const initialState = {
   tab: "home",
   countryFilter: [],
   regionFilter: [],
+  topicFilter: [],
+  deviceFilter: [],
 };
 
 const generalReducer = (state = initialState, { type, payload }) => {
@@ -32,6 +34,16 @@ const generalReducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         regionFilter: payload,
+      };
+    case "SET_TOPIC_FILTER":
+      return {
+        ...state,
+        topicFilter: payload,
+      };
+    case "SET_DEVICE_FILTER":
+      return {
+        ...state,
+        deviceFilter: payload,
       };
     default:
       return state;

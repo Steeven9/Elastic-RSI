@@ -1,20 +1,19 @@
-import { Autocomplete, Button, Grid, TextField } from "@mui/material";
 import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { getAggs, getWithQuery } from "../../API";
+import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
 
 const TopicsByWeek = () => {
   const [chartData, setData] = useState([]);
-  const [topics, setTopics] = useState([]);
-  const [selectedTopics, setSelectedTopics] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+  const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
+  const deviceFilter = useSelector((st) => st.generalReducer.deviceFilter);
 
   const getQuery = async () => {
     const queryTopics = {};
-    selectedTopics.forEach((topic) => {
+    topicFilter.forEach((topic) => {
       queryTopics[topic] = { match: { topics: topic } };
     });
 
@@ -22,6 +21,7 @@ const TopicsByWeek = () => {
       {
         country: countryFilter,
         admin1: regionFilter,
+        user_agent: deviceFilter,
       },
       {
         aggs: {
@@ -71,69 +71,13 @@ const TopicsByWeek = () => {
     setData(resArray);
   };
 
-  const getTopicsQuery = async () => {
-    const query = {
-      topics: {
-        terms: {
-          field: "topics",
-          size: 10000,
-          min_doc_count: 50,
-        },
-      },
-    };
-
-    const res = await getAggs(query);
-
-    const resQuery = res.topics.buckets;
-    const resArray = Object.keys(resQuery).map((key) => {
-      return resQuery[key].key;
-    });
-    setTopics(resArray);
-  };
-
-  const handleChange = (evt, val) => {
-    setSelectedTopics(val);
-  };
-
-  const handleClick = () => {
-    getQuery();
-  };
-
   useEffect(() => {
-    getTopicsQuery();
-  }, []);
-
-  useEffect(() => {
-    if (selectedTopics.length > 0) getQuery();
+    if (topicFilter.length > 0) getQuery();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countryFilter, regionFilter]);
+  }, [countryFilter, regionFilter, topicFilter, deviceFilter]);
 
   return (
     <>
-      <Grid sx={{ padding: 10 }} spacing={4} container>
-        <Grid item xs={6} md={8}>
-          <Autocomplete
-            multiple
-            id="tags-standard"
-            onChange={handleChange}
-            options={topics}
-            getOptionDisabled={() => (selectedTopics.length > 3 ? true : false)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="standard"
-                label="Select topics to compare (up to 4)"
-                placeholder="Topics"
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={6} md={4}>
-          <Button variant="outlined" onClick={handleClick}>
-            Compare
-          </Button>
-        </Grid>
-      </Grid>
       {chartData.length > 0 ? (
         <div>
           <ReactEcharts
@@ -144,7 +88,7 @@ const TopicsByWeek = () => {
                 top: 20,
               },
               legend: {
-                data: selectedTopics,
+                data: topicFilter,
                 top: 0,
                 right: 100,
               },
