@@ -8,6 +8,8 @@ const GeneralActions = () => {
   const dispatch = useDispatch();
   const [countries, setCountries] = useState([]);
   const [regions, setRegions] = useState([]);
+  const [topics, setTopics] = useState([]);
+  const [devices, setDevices] = useState([]);
 
   const setCountryFilter = useCallback(
     (data) => {
@@ -19,6 +21,20 @@ const GeneralActions = () => {
   const setRegionFilter = useCallback(
     (data) => {
       dispatch(actions.setRegionFilter(data));
+    },
+    [dispatch]
+  );
+
+  const setTopicFilter = useCallback(
+    (data) => {
+      dispatch(actions.setTopicFilter(data));
+    },
+    [dispatch]
+  );
+
+  const setDeviceFilter = useCallback(
+    (data) => {
+      dispatch(actions.setDeviceFilter(data));
     },
     [dispatch]
   );
@@ -81,8 +97,50 @@ const GeneralActions = () => {
     setRegions(resArray);
   };
 
+  const getTopicsQuery = async () => {
+    const query = {
+      topics: {
+        terms: {
+          field: "topics",
+          size: 10000,
+          min_doc_count: 50,
+        },
+      },
+    };
+
+    const res = await getAggs(query);
+
+    const resAgg = res.topics.buckets;
+    const resArray = Object.keys(resAgg).map((key) => {
+      return resAgg[key].key;
+    });
+    setTopics(resArray);
+  };
+
+  const getDevicesQuery = async () => {
+    const query = {
+      user_agent: {
+        terms: {
+          field: "user_agent",
+          size: 10000,
+          min_doc_count: 50,
+        },
+      },
+    };
+
+    const res = await getAggs(query);
+
+    const resAgg = res.user_agent.buckets;
+    const resArray = Object.keys(resAgg).map((key) => {
+      return resAgg[key].key;
+    });
+    setDevices(resArray);
+  };
+
   useEffect(() => {
     getCountriesQuery();
+    getTopicsQuery();
+    getDevicesQuery();
   }, []);
 
   const handleChangeCountry = (evt, val) => {
@@ -92,6 +150,14 @@ const GeneralActions = () => {
 
   const handleChangeRegion = (evt, val) => {
     setRegionFilter(val);
+  };
+
+  const handleChangeDevice = (evt, val) => {
+    setDeviceFilter(val);
+  };
+
+  const handleChangeTopic = (evt, val) => {
+    setTopicFilter(val);
   };
 
   return (
@@ -105,7 +171,7 @@ const GeneralActions = () => {
           General Filters
         </Typography>
       </Grid>
-      <Grid item xs={6} md={4}>
+      <Grid item xs={6} md={5}>
         <Autocomplete
           multiple
           id="tags-standard"
@@ -121,7 +187,7 @@ const GeneralActions = () => {
           )}
         />
       </Grid>
-      <Grid item xs={6} md={4}>
+      <Grid item xs={6} md={5}>
         <Autocomplete
           multiple
           id="tags-standard"
@@ -133,6 +199,38 @@ const GeneralActions = () => {
               variant="standard"
               label="Select regions"
               placeholder="Regions"
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={6} md={5}>
+        <Autocomplete
+          multiple
+          id="tags-standard"
+          onChange={handleChangeTopic}
+          options={topics}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="standard"
+              label="Select topics"
+              placeholder="Topics"
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={6} md={5}>
+        <Autocomplete
+          multiple
+          id="tags-standard"
+          onChange={handleChangeDevice}
+          options={devices}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="standard"
+              label="Select device"
+              placeholder="Device"
             />
           )}
         />

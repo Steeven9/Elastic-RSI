@@ -19,12 +19,16 @@ function Overview() {
   baseDataReference.current = baseData;
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+  const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
+  const deviceFilter = useSelector((st) => st.generalReducer.deviceFilter);
 
   const getData = async () => {
     const query = buildQuery(
       {
         country: countryFilter,
         admin1: regionFilter,
+        topics: topicFilter,
+        user_agent: deviceFilter,
       },
       {
         size: 0,
