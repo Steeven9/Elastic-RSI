@@ -6,66 +6,69 @@ import { getAggs, getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
 
 const TopicsByWeek = () => {
-  const [chartData, setdata] = useState([]);
+  const [chartData, setData] = useState([]);
   const [topics, setTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
 
   const getQuery = async () => {
-    const barsData = [];
-    await Promise.all(
-      selectedTopics.map(async (el) => {
-        try {
-          const query = buildQuery(
-            {
-              country: countryFilter,
-              admin1: regionFilter,
+    const queryTopics = {};
+    selectedTopics.forEach((topic) => {
+      queryTopics[topic] = { match: { topics: topic } };
+    });
+
+    const query = buildQuery(
+      {
+        country: countryFilter,
+        admin1: regionFilter,
+      },
+      {
+        aggs: {
+          topicsByWeek: {
+            filters: {
+              filters: queryTopics,
             },
-            {
-              aggs: {
-                daysOfWeek: {
+            aggs: {
+              daysOfWeek: {
+                filters: {
                   filters: {
-                    filters: {
-                      1: { match: { day_of_week: "1" } },
-                      2: { match: { day_of_week: "2" } },
-                      3: { match: { day_of_week: "3" } },
-                      4: { match: { day_of_week: "4" } },
-                      5: { match: { day_of_week: "5" } },
-                      6: { match: { day_of_week: "6" } },
-                      7: { match: { day_of_week: "7" } },
-                    },
+                    1: { match: { day_of_week: "1" } },
+                    2: { match: { day_of_week: "2" } },
+                    3: { match: { day_of_week: "3" } },
+                    4: { match: { day_of_week: "4" } },
+                    5: { match: { day_of_week: "5" } },
+                    6: { match: { day_of_week: "6" } },
+                    7: { match: { day_of_week: "7" } },
                   },
                 },
               },
-            }
-          );
-
-          const res = await getWithQuery(query);
-
-          const resAgg = res.aggregations.daysOfWeek.buckets;
-          const resArray = Object.keys(resAgg).map((key) => {
-            return resAgg[key].doc_count;
-          });
-
-          const barData = {
-            name: el,
-            type: "bar",
-            barGap: 0,
-            emphasis: {
-              focus: "series",
             },
-            data: resArray,
-          };
-
-          barsData.push(barData);
-        } catch (err) {
-          console.error(err);
-        }
-      })
+          },
+        },
+      }
     );
 
-    setdata(barsData);
+    const res = await getWithQuery(query);
+    const resAgg = res.aggregations.topicsByWeek.buckets;
+
+    const resArray = Object.keys(resAgg).map((topic) => {
+      const data = Object.keys(resAgg[topic].daysOfWeek.buckets).map((day) => {
+        return resAgg[topic].daysOfWeek.buckets[day].doc_count;
+      });
+
+      return {
+        name: topic,
+        type: "bar",
+        barGap: 0,
+        emphasis: {
+          focus: "series",
+        },
+        data: data,
+      };
+    });
+
+    setData(resArray);
   };
 
   const getTopicsQuery = async () => {
@@ -100,8 +103,10 @@ const TopicsByWeek = () => {
     getTopicsQuery();
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => getQuery(), [countryFilter, regionFilter]);
+  useEffect(() => {
+    if (selectedTopics.length > 0) getQuery();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countryFilter, regionFilter]);
 
   return (
     <>
