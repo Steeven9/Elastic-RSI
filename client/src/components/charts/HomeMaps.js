@@ -2,6 +2,7 @@ import { Slider, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { scaleLinear } from "d3-scale";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   ComposableMap,
   Geographies,
@@ -10,12 +11,18 @@ import {
   Sphere,
 } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
-import { getAggs } from "../../API";
+import { getWithQuery } from "../../API";
+import buildQuery from "../../utils/query";
 
 const geoUrl =
   "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
 const HomeMaps = () => {
+  const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+  const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
+  const deviceFilter = useSelector((st) => st.generalReducer.deviceFilter);
+
   const [countries, setCountries] = useState([]);
   const [rangeVal, setRangeVal] = useState([0, 1]);
   const [maxVal, setMaxVal] = useState(0);
@@ -27,33 +34,28 @@ const HomeMaps = () => {
     .range(["#ffedea", "#ff5233"]);
 
   const getMapData = async () => {
-    // const query = {
-    //   query: {
-    //     match: {
-    //       country: "CH",
-    //     },
-    //   },
-    //   aggs: {
-    //     regions: {
-    //       terms: {
-    //         field: "admin1",
-    //         size: 200,
-    //       },
-    //     },
-    //   },
-    // };
-
-    const query = {
-      countries: {
-        terms: {
-          field: "country",
-          size: 200,
-        },
+    const query = buildQuery(
+      {
+        country: countryFilter,
+        admin1: regionFilter,
+        topics: topicFilter,
+        user_agent: deviceFilter,
       },
-    };
+      {
+        size: 0,
+        aggs: {
+          countries: {
+            terms: {
+              field: "country",
+              size: 200,
+            },
+          },
+        },
+      }
+    );
 
-    const res = await getAggs(query);
-    const resAgg = res.countries.buckets;
+    const res = await getWithQuery(query);
+    const resAgg = res.aggregations.countries.buckets;
     const resArray = Object.keys(resAgg).map((key) => {
       return { name: resAgg[key].key, value: resAgg[key].doc_count };
     });
@@ -84,7 +86,8 @@ const HomeMaps = () => {
 
   useEffect(() => {
     getMapData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countryFilter, regionFilter, topicFilter, deviceFilter]);
   return (
     <>
       <Box sx={{ padding: "0 50px" }}>

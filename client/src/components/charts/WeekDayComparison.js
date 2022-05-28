@@ -29,12 +29,16 @@ function WeekDayComparison() {
   const [option, setOption] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+  const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
+  const deviceFilter = useSelector((st) => st.generalReducer.deviceFilter);
 
   const getData = async () => {
     const query = buildQuery(
       {
         country: countryFilter,
         admin1: regionFilter,
+        topic: topicFilter,
+        user_agent: deviceFilter,
       },
       {
         aggs: {
