@@ -107,7 +107,7 @@ const App = (props) => {
         </Box>
         <div style={{ width: "100%", padding: "10px" }}>
           <AppDrawer />
-          <Box component="main">
+          <Box component="main" width="90%">
             <Toolbar />
             <ChartTabs />
           </Box>
