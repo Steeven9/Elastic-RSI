@@ -6,6 +6,7 @@ const initialState = {
   regionFilter: [],
   topicFilter: [],
   deviceFilter: [],
+  admin1: [],
 };
 
 const generalReducer = (state = initialState, { type, payload }) => {
@@ -44,6 +45,11 @@ const generalReducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         deviceFilter: payload,
+      };
+    case "SET_ADMIN1":
+      return {
+        ...state,
+        admin1: payload,
       };
     default:
       return state;

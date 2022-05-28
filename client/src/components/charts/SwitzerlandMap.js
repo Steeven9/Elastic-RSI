@@ -1,28 +1,24 @@
 import { Slider, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { scaleLinear } from "d3-scale";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Graticule,
-  Sphere,
-} from "react-simple-maps";
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import * as actions from "../../actions";
 import ReactTooltip from "react-tooltip";
 import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
 
-import geoUrl from "../../geomaps/world_admin0.json";
+import geoUrl from "../../geomaps/switzerland_admin1.json";
 
-const HomeMaps = () => {
-  const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+const SwitzerlandMap = () => {
+  const dispatch = useDispatch();
+
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
   const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
   const deviceFilter = useSelector((st) => st.generalReducer.deviceFilter);
 
-  const [countries, setCountries] = useState([]);
+  const [cantons, setCantons] = useState([]);
   const [rangeVal, setRangeVal] = useState([0, 1]);
   const [maxVal, setMaxVal] = useState(0);
 
@@ -35,7 +31,7 @@ const HomeMaps = () => {
   const getMapData = async () => {
     const query = buildQuery(
       {
-        country: countryFilter,
+        country: ["CH"],
         admin1: regionFilter,
         topics: topicFilter,
         user_agent: deviceFilter,
@@ -43,9 +39,9 @@ const HomeMaps = () => {
       {
         size: 0,
         aggs: {
-          countries: {
+          cantons: {
             terms: {
-              field: "country",
+              field: "admin1",
               size: 200,
             },
           },
@@ -54,7 +50,7 @@ const HomeMaps = () => {
     );
 
     const res = await getWithQuery(query);
-    const resAgg = res.aggregations.countries.buckets;
+    const resAgg = res.aggregations.cantons.buckets;
     const resArray = Object.keys(resAgg).map((key) => {
       return { name: resAgg[key].key, value: resAgg[key].doc_count };
     });
@@ -64,7 +60,7 @@ const HomeMaps = () => {
     setRangeVal([0, Math.ceil(max * 0.5)]);
     setContent("");
 
-    setCountries(resArray);
+    setCantons(resArray);
   };
 
   const handleChange = (event, newValue) => {
@@ -86,7 +82,52 @@ const HomeMaps = () => {
   useEffect(() => {
     getMapData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countryFilter, regionFilter, topicFilter, deviceFilter]);
+  }, [regionFilter, topicFilter, deviceFilter]);
+
+  const setCountryFilter = useCallback(
+    (data) => {
+      dispatch(actions.setCountryFilter(data));
+    },
+    [dispatch]
+  );
+
+  const setAdmin1 = useCallback(
+    (data) => {
+      dispatch(actions.setAdmin1(data));
+    },
+    [dispatch]
+  );
+
+  const loadChRegions = async () => {
+    const query = {
+      query: {
+        term: {
+          country: "CH",
+        },
+      },
+      aggs: {
+        regions: {
+          terms: {
+            field: "admin1",
+            size: 200,
+            order: {
+              _key: "asc",
+            },
+          },
+        },
+      },
+    };
+
+    const res = await getWithQuery(query);
+    const resAgg = res.aggregations.regions.buckets;
+
+    setAdmin1(Object.keys(resAgg).map((key) => resAgg[key].key));
+  };
+  useEffect(() => {
+    setCountryFilter(["CH"]);
+    loadChRegions();
+  });
+
   return (
     <>
       <Box sx={{ padding: "0 50px" }}>
@@ -103,22 +144,13 @@ const HomeMaps = () => {
           step={100000}
         />
       </Box>
-      <ComposableMap
-        projectionConfig={{
-          rotate: [-10, 0, 0],
-          scale: 130,
-        }}
-        data-tip=""
-        height={400}
-      >
-        <Sphere stroke="#E4E5E6" strokeWidth={0.5} />
-        <Graticule stroke="#E4E5E6" strokeWidth={0.5} />
-        {countries.length > 0 && (
+      <ComposableMap data-tip="" viewBox="412 38 15 15" height={400}>
+        {cantons.length > 0 && (
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map((geo) => {
-                const d = countries.find(
-                  (s) => s.name === geo.properties.ISO_A2
+                const d = cantons.find(
+                  (s) => s.name === geo.properties.COUNTRY
                 );
 
                 return (
@@ -127,9 +159,9 @@ const HomeMaps = () => {
                     geography={geo}
                     fill={d && d.value ? colorScale(d.value) : "#F5F4F6"}
                     onMouseEnter={() => {
-                      const { NAME, ISO_A2 } = geo.properties;
-                      const value = countries.find((s) => s.name === ISO_A2);
-                      setContent(`${NAME} — ${rounded(value?.value)}`);
+                      const { COUNTRY } = geo.properties;
+                      const value = cantons.find((s) => s.name === COUNTRY);
+                      setContent(`${COUNTRY} — ${rounded(value?.value)}`);
                     }}
                     onMouseLeave={() => {
                       setContent("");
@@ -159,4 +191,4 @@ const HomeMaps = () => {
   );
 };
 
-export default HomeMaps;
+export default SwitzerlandMap;

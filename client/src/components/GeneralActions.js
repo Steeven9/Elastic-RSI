@@ -12,15 +12,21 @@ import LocationCityIcon from "@mui/icons-material/LocationCity";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import DevicesOtherIcon from "@mui/icons-material/DevicesOther";
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../actions";
 import { getAggs, getWithQuery } from "../API";
 import { Box } from "@mui/system";
 
 const GeneralActions = () => {
   const dispatch = useDispatch();
+  const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
+  const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+  const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
+  const deviceFilter = useSelector((st) => st.generalReducer.deviceFilter);
+  const admin1 = useSelector((st) => st.generalReducer.admin1);
+  const tab = useSelector((st) => st.generalReducer.tab);
+
   const [countries, setCountries] = useState([]);
-  const [regions, setRegions] = useState([]);
   const [topics, setTopics] = useState([]);
   const [devices, setDevices] = useState([]);
 
@@ -48,6 +54,13 @@ const GeneralActions = () => {
   const setDeviceFilter = useCallback(
     (data) => {
       dispatch(actions.setDeviceFilter(data));
+    },
+    [dispatch]
+  );
+
+  const setAdmin1 = useCallback(
+    (data) => {
+      dispatch(actions.setAdmin1(data));
     },
     [dispatch]
   );
@@ -103,11 +116,11 @@ const GeneralActions = () => {
     const res = await getWithQuery(query);
     const resAgg = res.aggregations.regions.buckets;
 
-    const resArray = Object.keys(resAgg).map((key) => {
-      return resAgg[key].key;
-    });
-
-    setRegions(resArray);
+    setAdmin1(
+      Object.keys(resAgg).map((key) => {
+        return resAgg[key].key;
+      })
+    );
   };
 
   const getTopicsQuery = async () => {
@@ -178,13 +191,15 @@ const GeneralActions = () => {
       id: "filter-countries",
       onChange: handleChangeCountry,
       options: countries,
+      value: countryFilter,
       label: "Select countries",
       icon: <PublicIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />,
     },
     {
       id: "filter-regions",
       onChange: handleChangeRegion,
-      options: regions,
+      options: admin1,
+      value: regionFilter,
       label: "Select regions",
       icon: (
         <LocationCityIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />
@@ -194,6 +209,7 @@ const GeneralActions = () => {
       id: "filter-topics",
       onChange: handleChangeTopic,
       options: topics,
+      value: topicFilter,
       label: "Select topics",
       icon: <LocalOfferIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />,
     },
@@ -201,6 +217,7 @@ const GeneralActions = () => {
       id: "filter-device",
       onChange: handleChangeDevice,
       options: devices,
+      value: deviceFilter,
       label: "Select devices",
       icon: (
         <DevicesOtherIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />
@@ -216,22 +233,31 @@ const GeneralActions = () => {
       </Toolbar>
       <Divider />
       <List>
-        {filtersList.map((x) => (
-          <ListItem key={x.id}>
-            <Autocomplete
-              multiple
-              onChange={x.onChange}
-              sx={{ width: 260 }}
-              options={x.options}
-              renderInput={(params) => (
-                <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-                  {x.icon}
-                  <TextField {...params} variant="outlined" label={x.label} />
-                </Box>
-              )}
-            />
-          </ListItem>
-        ))}
+        {filtersList
+          // Disable country selector in switzerland-only view
+          .filter((x) => x.id !== "filter-countries" || tab !== "switzerland")
+          .map((x) => (
+            <ListItem key={x.id}>
+              <Autocomplete
+                multiple
+                onChange={x.onChange}
+                value={x.value}
+                fullWidth
+                options={x.options}
+                renderInput={(params) => (
+                  <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+                    {x.icon}
+                    <TextField
+                      {...params}
+                      fullWidth
+                      variant="outlined"
+                      label={x.label}
+                    />
+                  </Box>
+                )}
+              />
+            </ListItem>
+          ))}
       </List>
     </div>
   );

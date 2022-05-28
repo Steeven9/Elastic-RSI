@@ -31,3 +31,8 @@ export const setDeviceFilter = (payload) => ({
   type: "SET_DEVICE_FILTER",
   payload,
 });
+
+export const setAdmin1 = (payload) => ({
+  type: "SET_ADMIN1",
+  payload,
+});
