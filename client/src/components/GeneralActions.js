@@ -1,8 +1,21 @@
-import { Autocomplete, Grid, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Divider,
+  List,
+  ListItem,
+  TextField,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import PublicIcon from "@mui/icons-material/Public";
+import LocationCityIcon from "@mui/icons-material/LocationCity";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import DevicesOtherIcon from "@mui/icons-material/DevicesOther";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import * as actions from "../actions";
 import { getAggs, getWithQuery } from "../API";
+import { Box } from "@mui/system";
 
 const GeneralActions = () => {
   const dispatch = useDispatch();
@@ -160,82 +173,67 @@ const GeneralActions = () => {
     setTopicFilter(val);
   };
 
+  const filtersList = [
+    {
+      id: "filter-countries",
+      onChange: handleChangeCountry,
+      options: countries,
+      label: "Select countries",
+      icon: <PublicIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />,
+    },
+    {
+      id: "filter-regions",
+      onChange: handleChangeRegion,
+      options: regions,
+      label: "Select regions",
+      icon: (
+        <LocationCityIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />
+      ),
+    },
+    {
+      id: "filter-topics",
+      onChange: handleChangeTopic,
+      options: topics,
+      label: "Select topics",
+      icon: <LocalOfferIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />,
+    },
+    {
+      id: "filter-device",
+      onChange: handleChangeDevice,
+      options: devices,
+      label: "Select devices",
+      icon: (
+        <DevicesOtherIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />
+      ),
+    },
+  ];
+
   return (
-    <Grid
-      sx={{ padding: 10, border: "1px solid" }}
-      container
-      justifyContent="space-between"
-    >
-      <Grid item xs={6} md={12}>
-        <Typography align="center" variant="h4">
-          General Filters
-        </Typography>
-      </Grid>
-      <Grid item xs={6} md={5}>
-        <Autocomplete
-          multiple
-          id="tags-standard"
-          onChange={handleChangeCountry}
-          options={countries}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Select countries"
-              placeholder="Countries"
+    <div>
+      <Toolbar />
+      <Toolbar>
+        <Typography variant="h4">Filters</Typography>
+      </Toolbar>
+      <Divider />
+      <List>
+        {filtersList.map((x) => (
+          <ListItem key={x.id}>
+            <Autocomplete
+              multiple
+              onChange={x.onChange}
+              sx={{ width: 260 }}
+              options={x.options}
+              renderInput={(params) => (
+                <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+                  {x.icon}
+                  <TextField {...params} variant="outlined" label={x.label} />
+                </Box>
+              )}
             />
-          )}
-        />
-      </Grid>
-      <Grid item xs={6} md={5}>
-        <Autocomplete
-          multiple
-          id="tags-standard"
-          onChange={handleChangeRegion}
-          options={regions}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Select regions"
-              placeholder="Regions"
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={6} md={5}>
-        <Autocomplete
-          multiple
-          id="tags-standard"
-          onChange={handleChangeTopic}
-          options={topics}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Select topics"
-              placeholder="Topics"
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={6} md={5}>
-        <Autocomplete
-          multiple
-          id="tags-standard"
-          onChange={handleChangeDevice}
-          options={devices}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Select device"
-              placeholder="Device"
-            />
-          )}
-        />
-      </Grid>
-    </Grid>
+          </ListItem>
+        ))}
+      </List>
+    </div>
   );
 };
 

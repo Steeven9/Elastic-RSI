@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import GeneralActions from "./GeneralActions";
 import ByDay from "./views/ByDay";
 import ByWeek from "./views/ByWeek";
 import GeneralViews from "./views/GeneralViews";
@@ -14,27 +13,12 @@ const ChartTabs = () => {
       case "home":
         return <Home />;
       case "general":
-        return (
-          <>
-            <GeneralActions />
-            <GeneralViews />
-          </>
-        );
+        return <GeneralViews />;
       case "byWeek":
-        return (
-          <>
-            <GeneralActions />
-            <ByWeek />
-          </>
-        );
+        return <ByWeek />;
       case "byDay":
       default:
-        return (
-          <>
-            <GeneralActions />
-            <ByDay />
-          </>
-        );
+        return <ByDay />;
     }
   };
 
