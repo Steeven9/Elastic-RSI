@@ -91,7 +91,42 @@ const SwitzerlandMap = () => {
     [dispatch]
   );
 
-  useEffect(() => setCountryFilter(["CH"]));
+  const setAdmin1 = useCallback(
+    (data) => {
+      dispatch(actions.setAdmin1(data));
+    },
+    [dispatch]
+  );
+
+  const loadChRegions = async () => {
+    const query = {
+      query: {
+        term: {
+          country: "CH",
+        },
+      },
+      aggs: {
+        regions: {
+          terms: {
+            field: "admin1",
+            size: 200,
+            order: {
+              _key: "asc",
+            },
+          },
+        },
+      },
+    };
+
+    const res = await getWithQuery(query);
+    const resAgg = res.aggregations.regions.buckets;
+
+    setAdmin1(Object.keys(resAgg).map((key) => resAgg[key].key));
+  };
+  useEffect(() => {
+    setCountryFilter(["CH"]);
+    loadChRegions();
+  });
 
   return (
     <>
