@@ -28,8 +28,8 @@ const AppDrawer = () => {
   );
 
   const menuItems = [
-    { name: "Global", key: "global" },
-    { name: "Switzerland", key: "switzerland" },
+    { name: "Global Map", key: "global" },
+    { name: "Switzerland Map", key: "switzerland" },
     { name: "General Views", key: "general" },
     {
       name: "By Week",

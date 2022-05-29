@@ -10,6 +10,7 @@ import Paper from "@mui/material/Paper";
 import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
 import { useSelector } from "react-redux";
+import Loading from "../Loading";
 
 function dateToWeekDayIndex(date) {
   const index = date.getDay();
@@ -97,7 +98,7 @@ function WeekDayCounts() {
                   <b>Week day</b>
                 </TableCell>
                 <TableCell align="left">
-                  <b>Number occurences</b>
+                  <b>Number occurrences</b>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -114,7 +115,7 @@ function WeekDayCounts() {
           </Table>
         </TableContainer>
       ) : (
-        <div style={{ textAlign: "center" }}>Loading...</div>
+        <Loading />
       )}
     </div>
   );

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
+import Loading from "../Loading";
 
 function dateToHourIndex(date) {
   return date.getHours();
@@ -156,7 +157,7 @@ const DeviceDayComparison = () => {
           }}
         />
       ) : (
-        <div style={{ textAlign: "center" }}>Loading...</div>
+        <Loading />
       )}
     </div>
   );

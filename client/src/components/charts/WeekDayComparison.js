@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
+import Loading from "../Loading";
 
 function dateToWeekDayIndex(date) {
   const index = date.getDay();
@@ -158,11 +159,7 @@ function WeekDayComparison() {
         aspectRatio: 2 / 1,
       }}
     >
-      {option ? (
-        <ReactEcharts option={option} />
-      ) : (
-        <div style={{ textAlign: "center" }}>Loading...</div>
-      )}
+      {option ? <ReactEcharts option={option} /> : <Loading />}
     </div>
   );
 }

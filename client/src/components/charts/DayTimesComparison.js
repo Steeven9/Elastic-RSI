@@ -3,6 +3,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
+import Loading from "../Loading";
 
 function mapHourToDayTime(hour) {
   if (6 < hour && hour <= 12) {
@@ -126,7 +127,7 @@ function DayTimesComparison() {
           }}
         />
       ) : (
-        <div style={{ textAlign: "center" }}>Loading...</div>
+        <Loading />
       )}
     </Fragment>
   );

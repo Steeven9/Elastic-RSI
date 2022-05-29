@@ -4,6 +4,7 @@ import ReactEcharts from "echarts-for-react";
 import { getCount } from "../../API";
 import { useSelector } from "react-redux";
 import buildQuery from "../../utils/query";
+import Loading from "../Loading";
 
 function OverallUserAgentComparison() {
   const [data, setData] = useState(undefined);
@@ -108,7 +109,7 @@ function OverallUserAgentComparison() {
           }}
         />
       ) : (
-        <div style={{ textAlign: "center" }}>Loading...</div>
+        <Loading />
       )}
     </div>
   );
