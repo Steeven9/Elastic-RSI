@@ -5,38 +5,35 @@ import Typography from "@mui/material/Typography";
 import { getCount } from "../../API";
 import Loading from "../Loading";
 
-function TopicIdentification() {
+function UnknownCountries() {
   const [data, setData] = useState(undefined);
 
   const getData = async () => {
     let result = {};
     await Promise.all(
-      ["total", "identified"].map(async (entry) => {
+      ["total", "unknown"].map(async (entry) => {
         const query = {
-          query: {
-            bool: {
-              must: [
-                {
-                  wildcard: {
-                    "path.keyword": {
-                      value: "/g/?*",
-                    },
-                  },
+          ...(entry === "total"
+            ? {
+                query: {
+                  match_all: {},
                 },
-              ],
-              ...(entry === "identified"
-                ? {
-                    filter: [
+              }
+            : {
+                query: {
+                  bool: {
+                    must: [
                       {
-                        script: {
-                          script: "doc['topics'].length != 0",
+                        term: {
+                          country: {
+                            value: "unknown",
+                          },
                         },
                       },
                     ],
-                  }
-                : {}),
-            },
-          },
+                  },
+                },
+              }),
         };
         const count = await getCount(query);
         result[entry] = count;
@@ -61,11 +58,11 @@ function TopicIdentification() {
         <Card sx={{ width: "50%" }}>
           <CardContent>
             <Typography variant="h6">
-              {data.identified} / {data.total} (
-              {100 * (data.identified / data.total).toFixed(3)} %)
+              {data.unknown} / {data.total} (
+              {100 * (data.unknown / data.total).toFixed(3)} %)
             </Typography>
             <Typography color="gray">
-              topics identified in requests to path /g/[ID]
+              requests from unknown countries
             </Typography>
           </CardContent>
         </Card>
@@ -76,4 +73,4 @@ function TopicIdentification() {
   );
 }
 
-export default TopicIdentification;
+export default UnknownCountries;
