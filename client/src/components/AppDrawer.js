@@ -39,6 +39,10 @@ const AppDrawer = () => {
       name: "By Day",
       key: "byDay",
     },
+    {
+      name: "Miscellaneous",
+      key: "interesting"
+    },
   ];
 
   const setPage = (tab) => {
