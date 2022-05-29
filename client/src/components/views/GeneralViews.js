@@ -2,7 +2,7 @@ import React from "react";
 import Overview from "../charts/Overview";
 import TopicsView from "../charts/TopicsView";
 import OverallUserAgentComparison from "../charts/OverallUserAgentComparison";
-import WeekDayCounts from "../charts/WeekdayCounts";
+import WeekDayCounts from "../charts/WeekDayCounts";
 import DeviceGraph from "../charts/DeviceGraph";
 import TopicGraph from "../charts/TopicGraph";
 import { Grid } from "@mui/material";
