@@ -1,5 +1,5 @@
-import MenuIcon from "@mui/icons-material/Menu";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
@@ -15,8 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import * as actions from "./actions";
 import AppDrawer from "./components/AppDrawer";
 import ChartTabs from "./components/ChartTabs";
-import theme from "./Theme";
 import GeneralActions from "./components/GeneralActions";
+import theme from "./Theme";
 
 const App = (props) => {
   const { window } = props;
@@ -107,7 +107,7 @@ const App = (props) => {
         </Box>
         <div style={{ width: "100%", padding: "10px" }}>
           <AppDrawer />
-          <Box component="main" width="90%">
+          <Box component="main">
             <Toolbar />
             <ChartTabs />
           </Box>

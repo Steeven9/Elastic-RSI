@@ -26,7 +26,7 @@ function getWeekDays() {
   ];
 }
 
-function WeekDayComparison() {
+const WeekDayComparison = () => {
   const [option, setOption] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
@@ -162,6 +162,6 @@ function WeekDayComparison() {
       {option ? <ReactEcharts option={option} /> : <Loading />}
     </div>
   );
-}
+};
 
 export default WeekDayComparison;
