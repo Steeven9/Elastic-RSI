@@ -28,7 +28,7 @@ function getWeekDays() {
   ];
 }
 
-function WeekDayCounts() {
+const WeekDayCounts = () => {
   const [rows, setRows] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
@@ -118,6 +118,6 @@ function WeekDayCounts() {
       )}
     </div>
   );
-}
+};
 
 export default WeekDayCounts;
