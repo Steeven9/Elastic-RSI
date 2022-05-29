@@ -5,6 +5,7 @@ import ByWeek from "./views/ByWeek";
 import GeneralViews from "./views/GeneralViews";
 import Home from "./views/Home";
 import Switzerland from "./views/Switzerland";
+import Interesting from "./views/Interesting";
 
 const ChartTabs = () => {
   const tab = useSelector((st) => st.generalReducer.tab);
@@ -20,6 +21,9 @@ const ChartTabs = () => {
       case "byWeek":
         return <ByWeek />;
       case "byDay":
+        return <ByDay />;
+      case "interesting":
+        return <Interesting />;
       default:
         return <ByDay />;
     }
