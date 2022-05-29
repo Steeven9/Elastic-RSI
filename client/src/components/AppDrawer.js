@@ -41,7 +41,7 @@ const AppDrawer = () => {
     },
     {
       name: "Miscellaneous",
-      key: "interesting"
+      key: "interesting",
     },
   ];
 
