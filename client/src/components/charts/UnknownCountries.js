@@ -6,69 +6,71 @@ import { getCount } from "../../API";
 import Loading from "../Loading";
 
 function UnknownCountries() {
-    const [data, setData] = useState(undefined);
+  const [data, setData] = useState(undefined);
 
-    const getData = async () => {
-        let result = {};
-        await Promise.all(
-            ["total", "unknown"].map(async (entry) => {
-                const query = {
-                    ...(entry === "total" ? {
-                        query: {
-                            match_all: {}
-                        }
-                    } : {
-                        query: {
-                            bool: {
-                                must: [
-                                    {
-                                        term: {
-                                            country: {
-                                                value: "unknown"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    })
-                };
-                const count = await getCount(query);
-                result[entry] = count;
-            })
-        );
-        setData(result);
-    };
-
-    useEffect(() => {
-        getData();
-    }, []);
-
-    return (
-        <div
-            style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-            }}
-        >
-            {data ? (
-                <Card sx={{ width: "50%" }}>
-                    <CardContent>
-                        <Typography variant="h6">
-                            {data.unknown} / {data.total} (
-                            {100 * (data.unknown / data.total).toFixed(3)} %)
-                        </Typography>
-                        <Typography color="gray">
-                            requests from unknown countries
-                        </Typography>
-                    </CardContent>
-                </Card>
-            ) : (
-                <Loading />
-            )}
-        </div>
+  const getData = async () => {
+    let result = {};
+    await Promise.all(
+      ["total", "unknown"].map(async (entry) => {
+        const query = {
+          ...(entry === "total"
+            ? {
+                query: {
+                  match_all: {},
+                },
+              }
+            : {
+                query: {
+                  bool: {
+                    must: [
+                      {
+                        term: {
+                          country: {
+                            value: "unknown",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              }),
+        };
+        const count = await getCount(query);
+        result[entry] = count;
+      })
     );
+    setData(result);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {data ? (
+        <Card sx={{ width: "50%" }}>
+          <CardContent>
+            <Typography variant="h6">
+              {data.unknown} / {data.total} (
+              {100 * (data.unknown / data.total).toFixed(3)} %)
+            </Typography>
+            <Typography color="gray">
+              requests from unknown countries
+            </Typography>
+          </CardContent>
+        </Card>
+      ) : (
+        <Loading />
+      )}
+    </div>
+  );
 }
 
 export default UnknownCountries;
