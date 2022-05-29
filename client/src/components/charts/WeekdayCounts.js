@@ -1,15 +1,14 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
-import { useSelector } from "react-redux";
 import Loading from "../Loading";
 
 function dateToWeekDayIndex(date) {
@@ -90,7 +89,7 @@ function WeekDayCounts() {
       }}
     >
       {rows ? (
-        <TableContainer sx={{ width: "25%" }} component={Paper}>
+        <TableContainer component={Paper}>
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>

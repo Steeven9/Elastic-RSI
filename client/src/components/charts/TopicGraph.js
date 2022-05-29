@@ -98,7 +98,7 @@ const TopicGraph = () => {
       {chartData.nodes.length > 0 ? (
         <div>
           <ReactEcharts
-            style={{ height: 800 }}
+            style={{ height: 750 }}
             option={{
               title: {
                 text: "Topics correlation graph",
