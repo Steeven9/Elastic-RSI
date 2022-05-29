@@ -4,6 +4,7 @@ body {
   min-height: calc(100vh - 60px);
   min-width: 400px;
   margin: 30px;
+  overflow-y: scroll !important;
 }
 
 .inlb {
