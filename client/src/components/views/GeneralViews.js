@@ -9,18 +9,25 @@ import TopicsView from "../charts/TopicsView";
 const GeneralViews = () => {
   return (
     <>
-      <Grid container justifyContent="space-evenly">
-        <Grid item xs={6} md={5}>
-          <DeviceGraph />
+      <div style={{ marginBottom: "100px" }}>
+        <Grid container justifyContent="space-evenly">
+          <Grid item xs={6} md={5}>
+            <DeviceGraph />
+          </Grid>
+          <Grid item xs={6} md={5}>
+            <TopicGraph />
+          </Grid>
         </Grid>
-        <Grid item xs={6} md={5}>
-          <TopicGraph />
-        </Grid>
-      </Grid>
-
-      <Overview />
-      <TopicsView />
-      <OverallUserAgentComparison />
+      </div>
+      <div style={{ marginBottom: "50px" }}>
+        <Overview />
+      </div>
+      <div style={{ marginBottom: "75px" }}>
+        <TopicsView />
+      </div>
+      <div style={{ marginBottom: "50px" }}>
+        <OverallUserAgentComparison />
+      </div>
     </>
   );
 };
