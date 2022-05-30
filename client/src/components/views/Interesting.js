@@ -12,11 +12,13 @@ const Interesting = () => {
       <div style={{ marginBottom: "20px" }}>
         <UnknownCountries />
       </div>
-      <div style={{
-        marginBottom: "20px",
-        width: "40%",
-        margin: "auto"
-      }}>
+      <div
+        style={{
+          marginBottom: "20px",
+          width: "40%",
+          margin: "auto",
+        }}
+      >
         <WeekDayCounts />
       </div>
     </>
