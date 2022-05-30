@@ -108,6 +108,7 @@ const WeekDayComparison = () => {
         axisLabel: {
           interval: 2,
         },
+        boundaryGap: false,
         type: "category",
         data: new Array(24)
           .fill(0)
