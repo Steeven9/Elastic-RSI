@@ -12,9 +12,8 @@ import {
 } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
 import { getWithQuery } from "../../API";
-import buildQuery from "../../utils/query";
-
 import geoUrl from "../../geomaps/world_admin0.json";
+import buildQuery from "../../utils/query";
 
 const HomeMaps = () => {
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
@@ -25,6 +24,7 @@ const HomeMaps = () => {
   const [countries, setCountries] = useState([]);
   const [rangeVal, setRangeVal] = useState([0, 1]);
   const [maxVal, setMaxVal] = useState(0);
+  const [marks, setMarks] = useState([]);
 
   const [content, setContent] = useState("Loading...");
 
@@ -61,6 +61,10 @@ const HomeMaps = () => {
 
     const max = resArray.reduce((acc, x) => (x.value > acc ? x.value : acc), 0);
     setMaxVal(Math.ceil(max * 0.5));
+    setMarks([
+      { value: 0, label: "Min." },
+      { value: Math.ceil(max * 0.5), label: "Max." },
+    ]);
     setRangeVal([0, Math.ceil(max * 0.5)]);
     setContent("");
 
@@ -91,7 +95,7 @@ const HomeMaps = () => {
     <>
       <Box sx={{ padding: "0 50px" }}>
         <Typography id="rangeMap" gutterBottom>
-          Range
+          Min. and Max. number of request slider
         </Typography>
         <Slider
           getAriaLabel={() => "Range"}
@@ -101,6 +105,7 @@ const HomeMaps = () => {
           valueLabelDisplay="auto"
           max={maxVal}
           step={100000}
+          marks={marks}
         />
       </Box>
       <ComposableMap

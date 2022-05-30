@@ -4,12 +4,11 @@ import { scaleLinear } from "d3-scale";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
-import * as actions from "../../actions";
 import ReactTooltip from "react-tooltip";
+import * as actions from "../../actions";
 import { getWithQuery } from "../../API";
-import buildQuery from "../../utils/query";
-
 import geoUrl from "../../geomaps/switzerland_admin1.json";
+import buildQuery from "../../utils/query";
 
 const SwitzerlandMap = () => {
   const dispatch = useDispatch();
@@ -21,6 +20,7 @@ const SwitzerlandMap = () => {
   const [cantons, setCantons] = useState([]);
   const [rangeVal, setRangeVal] = useState([0, 1]);
   const [maxVal, setMaxVal] = useState(0);
+  const [marks, setMarks] = useState([]);
 
   const [content, setContent] = useState("Loading...");
 
@@ -57,6 +57,10 @@ const SwitzerlandMap = () => {
 
     const max = resArray.reduce((acc, x) => (x.value > acc ? x.value : acc), 0);
     setMaxVal(Math.ceil(max * 0.5));
+    setMarks([
+      { value: 0, label: "Min." },
+      { value: Math.ceil(max * 0.5), label: "Max." },
+    ]);
     setRangeVal([0, Math.ceil(max * 0.5)]);
     setContent("");
 
@@ -132,7 +136,7 @@ const SwitzerlandMap = () => {
     <>
       <Box sx={{ padding: "0 50px" }}>
         <Typography id="rangeMap" gutterBottom>
-          Range
+          Min. and Max. number of request slider
         </Typography>
         <Slider
           getAriaLabel={() => "Range"}
@@ -142,6 +146,7 @@ const SwitzerlandMap = () => {
           valueLabelDisplay="auto"
           max={maxVal}
           step={100000}
+          marks={marks}
         />
       </Box>
       <ComposableMap data-tip="" viewBox="412 38 15 15" height={400}>
