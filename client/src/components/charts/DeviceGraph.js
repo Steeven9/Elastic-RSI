@@ -102,7 +102,7 @@ const DeviceGraph = () => {
             style={{ height: 750 }}
             option={{
               title: {
-                text: "Device correlation graph",
+                text: "Devices correlation graph",
                 left: "center",
               },
               legend: [
@@ -114,7 +114,7 @@ const DeviceGraph = () => {
               animationEasingUpdate: "quinticInOut",
               series: [
                 {
-                  name: "Device graph",
+                  name: "Devices graph",
                   type: "graph",
                   layout: "circular",
                   circular: {
@@ -132,6 +132,13 @@ const DeviceGraph = () => {
                   lineStyle: {
                     color: "source",
                     curveness: 0.3,
+                  },
+                  emphasis: {
+                    focus: "adjacency",
+                    label: false,
+                    lineStyle: {
+                      width: 7,
+                    },
                   },
                 },
               ],

@@ -61,7 +61,6 @@ const TopicGraph = () => {
 
     const topics = Object.keys(graph);
     const n = topics.length;
-    const angleSlice = 360 / n;
 
     const links = new Set();
     const categories = new Array(n);
@@ -73,9 +72,7 @@ const TopicGraph = () => {
       return {
         id: topic,
         name: topic,
-        symbolSize: 20,
-        x: Math.cos(angleSlice * idx) * 200,
-        y: Math.sin(angleSlice * idx) * 200,
+        symbolSize: 10,
         value: 1,
         category: idx,
       };
@@ -113,11 +110,12 @@ const TopicGraph = () => {
               animationEasingUpdate: "quinticInOut",
               series: [
                 {
-                  name: "Topic graph",
+                  name: "Topics graph",
                   type: "graph",
-                  layout: "circular",
-                  circular: {
-                    rotateLabel: true,
+                  layout: "force",
+                  force: {
+                    repulsion: 150,
+                    edgeLength: 50,
                   },
                   data: chartData.nodes,
                   links: chartData.links,
@@ -131,6 +129,13 @@ const TopicGraph = () => {
                   lineStyle: {
                     color: "source",
                     curveness: 0.3,
+                  },
+                  emphasis: {
+                    focus: "adjacency",
+                    label: false,
+                    lineStyle: {
+                      width: 7,
+                    },
                   },
                 },
               ],
