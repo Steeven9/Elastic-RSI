@@ -113,7 +113,7 @@ function DayTimesComparison() {
                 fontWeight: "bolder",
               },
               axisTick: {
-                show: false
+                show: false,
               },
               type: "category",
               data: data.map((e) => e.x),

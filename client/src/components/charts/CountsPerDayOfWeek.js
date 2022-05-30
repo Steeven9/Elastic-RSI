@@ -94,7 +94,7 @@ const CountsPerDayOfWeek = () => {
               fontWeight: "bolder",
             },
             axisTick: {
-              show: false
+              show: false,
             },
           },
           yAxis: {
