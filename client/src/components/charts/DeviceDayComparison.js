@@ -90,7 +90,7 @@ const DeviceDayComparison = () => {
           option={{
             grid: {
               left: "10%",
-              right: "10%",
+              right: "12.5%",
               containLabel: true,
             },
             title: {
