@@ -77,6 +77,9 @@ function OverallUserAgentComparison() {
                 fontSize: 14,
                 fontWeight: "bolder",
               },
+              axisTick: {
+                show: false,
+              },
               type: "category",
               data: data.devices,
             },

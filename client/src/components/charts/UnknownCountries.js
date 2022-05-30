@@ -55,7 +55,7 @@ function UnknownCountries() {
       }}
     >
       {data ? (
-        <Card sx={{ width: "50%" }}>
+        <Card sx={{ width: "40%" }}>
           <CardContent>
             <Typography variant="h6">
               {data.unknown} / {data.total} (

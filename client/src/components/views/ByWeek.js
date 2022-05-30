@@ -2,12 +2,27 @@ import React from "react";
 import CountsPerDayOfWeek from "../charts/CountsPerDayOfWeek";
 import TopicsByWeek from "../charts/TopicsByWeek";
 import WeekDayComparison from "../charts/WeekDayComparison";
-import WeekDayCounts from "../charts/WeekDayCounts";
 
 const ByWeek = () => {
   return (
     <>
-      <div
+      <div style={{ marginBottom: "30px" }}>
+        <CountsPerDayOfWeek />
+      </div>
+      <div style={{ marginBottom: "30px" }}>
+        <TopicsByWeek />
+      </div>
+      <div style={{ marginBottom: "30px" }}>
+        <WeekDayComparison />
+      </div>
+    </>
+  );
+};
+export default ByWeek;
+
+/**
+ 
+    <div
         style={{
           display: "grid",
           gridTemplateAreas: `'chart1 table' 'chart2 table`,
@@ -26,6 +41,5 @@ const ByWeek = () => {
       </div>
       <WeekDayComparison />
     </>
-  );
-};
-export default ByWeek;
+
+ */
