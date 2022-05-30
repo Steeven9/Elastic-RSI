@@ -72,7 +72,7 @@ const CountsPerDayOfWeek = () => {
             nameTextStyle: {
               fontSize: 14,
               fontWeight: "bolder",
-            }
+            },
           },
           yAxis: {
             type: "value",
@@ -82,7 +82,7 @@ const CountsPerDayOfWeek = () => {
             nameTextStyle: {
               fontSize: 14,
               fontWeight: "bolder",
-            }
+            },
           },
           series: [
             {

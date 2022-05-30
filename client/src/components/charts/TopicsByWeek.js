@@ -103,7 +103,7 @@ const TopicsByWeek = () => {
                 nameTextStyle: {
                   fontSize: 14,
                   fontWeight: "bolder",
-                }
+                },
               },
               yAxis: {
                 type: "value",
@@ -113,7 +113,7 @@ const TopicsByWeek = () => {
                 nameTextStyle: {
                   fontSize: 14,
                   fontWeight: "bolder",
-                }
+                },
               },
               series: chartData,
             }}
