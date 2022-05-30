@@ -4,6 +4,26 @@ import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
 import buildQuery from "../../utils/query";
 
+function mapLabelsToFullNames(label) {
+  return getWeekDays()[getLabels().indexOf(label)]
+}
+
+function getWeekDays() {
+  return [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+}
+
+function getLabels() {
+  return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+}
+
 const CountsPerDayOfWeek = () => {
   const [chartData, setdata] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
@@ -90,6 +110,12 @@ const CountsPerDayOfWeek = () => {
               large: true,
               data: chartData,
               barWidth: "90%",
+              tooltip: {
+                formatter: (params) => {
+                  return `Day: ${mapLabelsToFullNames(params.name)} </br> Number of requests: ${params.value.toFixed(1)}`
+                },
+                extraCssText: "box-shadow: 0 0 0 rgba(0, 0, 0, 0);",
+              }
             },
           ],
         }}

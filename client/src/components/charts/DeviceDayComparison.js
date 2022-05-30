@@ -137,8 +137,8 @@ const DeviceDayComparison = () => {
                 type: "line",
                 tooltip: {
                   formatter: (params) =>
-                    `Device: ${params.seriesName} </br>Number requests: ${
-                      params.value
+                    `Device: ${params.seriesName} </br>Number of requests: ${
+                      params.value.toFixed(1)
                     } </br>Day time: ${params.name} - ${(
                       parseInt(params.name.split(":")[0]) + 1
                     )
