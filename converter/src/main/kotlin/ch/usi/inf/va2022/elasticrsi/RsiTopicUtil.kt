@@ -73,20 +73,28 @@ object RsiTopicUtil {
                 }
             }
             .filter {
-                it.isNotEmpty() && !it.endsWith(".html")
+                // Skip parameters and files
+                it.isNotEmpty() &&
+                        !it.startsWith("&") &&
+                        !it.startsWith("javax") &&
+                        !it.endsWith(".cfm") &&
+                        !it.endsWith(".css") &&
+                        !it.endsWith(".js") &&
+                        !it.endsWith(".jsp") &&
+                        !it.endsWith(".html") &&
+                        !it.endsWith(".xhtml") &&
+                        !it.endsWith(".xml")
             }
             .map {
                 // Normalize
                 it.lowercase(Locale.ROOT)
                     .replace("-", "")
+                    .replace(".", "")
             }
             .filter {
+                // 3- chars are not interesting
                 // 30+ chars are usually ids
-                it.length < 30
-            }
-            .filter {
-                // Skip scripts and parameters
-                !it.startsWith("&") && !it.endsWith(".jsp")
+                it.length in 3..29
             }
             .filter {
                 // Skip words in blacklist and integer-only values

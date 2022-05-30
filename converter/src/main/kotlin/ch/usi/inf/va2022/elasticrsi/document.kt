@@ -114,7 +114,7 @@ fun Document.toNdjson(): String {
             "\"path\": \"$path\", " +
             "\"http_version\": \"$httpVersion\", " +
             "\"user_agent\": $userAgent, " +
-            "\"topics\": [\"${topics.joinToString("\", \"")}\"] " +
+            "\"topics\": " + (if (topics.isEmpty()) "[]" else "[\"${topics.joinToString("\", \"")}\"] ") +
             "}\n"
 }
 
@@ -143,5 +143,5 @@ private fun Detection.keywords(): String {
         os.platform.ifPresent { platform -> keywords.add(platform) }
         keywords.add(os.name)
     }
-    return "[\"${keywords.joinToString("\", \"")}\"]"
+    return if (keywords.isEmpty()) "[]" else "[\"${keywords.joinToString("\", \"")}\"]"
 }
