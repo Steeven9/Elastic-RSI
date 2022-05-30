@@ -25,7 +25,7 @@ const ChartTabs = () => {
       case "interesting":
         return <Interesting />;
       default:
-        return <ByDay />;
+        return <Home />;
     }
   };
 
