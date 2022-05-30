@@ -86,7 +86,7 @@ const WeekDayComparison = () => {
         containLabel: true,
       },
       title: {
-        text: "Weekday average comparison",
+        text: "Comparison of daily course of number of requests between weekdays",
         left: "center",
       },
       legend: {
@@ -114,7 +114,7 @@ const WeekDayComparison = () => {
           .map((_, i) => `${new String(i).padStart(2, "0")}:00`),
       },
       yAxis: {
-        name: "Number requests",
+        name: "Number of requests",
         nameLocation: "middle",
         nameGap: 70,
         nameTextStyle: {

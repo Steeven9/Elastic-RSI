@@ -94,7 +94,7 @@ const DeviceDayComparison = () => {
               containLabel: true,
             },
             title: {
-              text: "Device average comparison",
+              text: "Comparison of daily course of number of requests between device types",
               left: "center",
             },
             legend: {
@@ -122,7 +122,7 @@ const DeviceDayComparison = () => {
                 .map((_, i) => `${new String(i).padStart(2, "0")}:00`),
             },
             yAxis: {
-              name: "Number requests",
+              name: "Number of requests",
               nameLocation: "middle",
               nameGap: 70,
               nameTextStyle: {

@@ -283,7 +283,7 @@ function Overview() {
               containLabel: true,
             },
             title: {
-              text: "Overview",
+              text: "Zoomable overview",
               left: "center",
             },
             tooltip: {
@@ -302,7 +302,7 @@ function Overview() {
               ),
             },
             yAxis: {
-              name: "Number requests",
+              name: "Number of requests",
               nameLocation: "middle",
               nameGap: 80,
               nameTextStyle: {
@@ -321,7 +321,7 @@ function Overview() {
                 barWidth: "90%",
                 tooltip: {
                   formatter: (params) =>
-                    `Number requests: ${params.value} </br>Time: ${params.name}`,
+                    `Number of requests: ${params.value} </br>Time: ${params.name}`,
                   extraCssText: "box-shadow: 0 0 0 rgba(0, 0, 0, 0);",
                 },
               },
