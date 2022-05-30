@@ -115,6 +115,7 @@ const HomeMaps = () => {
         }}
         data-tip=""
         height={400}
+        style={{ outline: "none" }}
       >
         <Sphere stroke="#E4E5E6" strokeWidth={0.5} />
         <Graticule stroke="#E4E5E6" strokeWidth={0.5} />

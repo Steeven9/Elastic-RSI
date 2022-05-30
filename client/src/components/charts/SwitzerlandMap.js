@@ -149,7 +149,12 @@ const SwitzerlandMap = () => {
           marks={marks}
         />
       </Box>
-      <ComposableMap data-tip="" viewBox="412 38 15 15" height={400}>
+      <ComposableMap
+        data-tip=""
+        viewBox="412 38 15 15"
+        height={400}
+        style={{ outline: "none" }}
+      >
         {cantons.length > 0 && (
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
