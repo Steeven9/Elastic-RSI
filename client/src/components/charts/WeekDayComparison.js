@@ -129,9 +129,11 @@ const WeekDayComparison = () => {
           type: "line",
           tooltip: {
             formatter: (params) =>
-              `Day: ${params.seriesName} </br>Number of requests: ${
-                params.value.toFixed(1)
-              } </br>Day time: ${params.name} - ${(
+              `Day: ${
+                params.seriesName
+              } </br>Number of requests: ${params.value.toFixed(
+                1
+              )} </br>Day time: ${params.name} - ${(
                 parseInt(params.name.split(":")[0]) + 1
               )
                 .toString()

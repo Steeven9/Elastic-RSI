@@ -95,7 +95,8 @@ function OverallUserAgentComparison() {
                 type: "bar",
                 tooltip: {
                   formatter: (params) =>
-                    `Device type: ${params.name} </br>Number of requests: ${params.value
+                    `Device type: ${params.name} </br>Number of requests: ${
+                      params.value
                     } </br> Overall share: ${(
                       (100 * params.value) /
                       data.counts.reduce((a, e) => a + e, 0)

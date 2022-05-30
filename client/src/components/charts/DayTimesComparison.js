@@ -130,7 +130,9 @@ function DayTimesComparison() {
                 type: "bar",
                 tooltip: {
                   formatter: (params) =>
-                    `Number of requests: ${params.value} </br>Day time: ${params.name} </br>Time range: ${mapDayTimeToTimeRange(params.name)}`,
+                    `Number of requests: ${params.value} </br>Day time: ${
+                      params.name
+                    } </br>Time range: ${mapDayTimeToTimeRange(params.name)}`,
                   extraCssText: "box-shadow: 0 0 0 rgba(0, 0, 0, 0);",
                 },
                 data: data.map((e) => e.y),
