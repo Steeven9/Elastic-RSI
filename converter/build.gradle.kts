@@ -37,5 +37,6 @@ dependencies {
     implementation("io.github.mngsk:device-detector:1.0.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.json:json:20220320")
+    implementation("org.slf4j:slf4j-nop:1.7.36")
     implementation("net.iakovlev:timeshape:2020d.12")
 }
