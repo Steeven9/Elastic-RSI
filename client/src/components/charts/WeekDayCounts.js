@@ -81,13 +81,7 @@ const WeekDayCounts = () => {
   }, [countryFilter, regionFilter]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <div>
       {rows ? (
         <TableContainer component={Paper}>
           <Table aria-label="simple table">
@@ -107,7 +101,7 @@ const WeekDayCounts = () => {
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
-                  <TableCell align="center">{row.count}</TableCell>
+                  <TableCell align="left">{row.count}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

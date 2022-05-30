@@ -15,25 +15,25 @@ function UnknownCountries() {
         const query = {
           ...(entry === "total"
             ? {
-                query: {
-                  match_all: {},
-                },
-              }
+              query: {
+                match_all: {},
+              },
+            }
             : {
-                query: {
-                  bool: {
-                    must: [
-                      {
-                        term: {
-                          country: {
-                            value: "unknown",
-                          },
+              query: {
+                bool: {
+                  must: [
+                    {
+                      term: {
+                        country: {
+                          value: "unknown",
                         },
                       },
-                    ],
-                  },
+                    },
+                  ],
                 },
-              }),
+              },
+            }),
         };
         const count = await getCount(query);
         result[entry] = count;
@@ -55,7 +55,7 @@ function UnknownCountries() {
       }}
     >
       {data ? (
-        <Card sx={{ width: "50%" }}>
+        <Card sx={{ width: "40%" }}>
           <CardContent>
             <Typography variant="h6">
               {data.unknown} / {data.total} (
