@@ -82,7 +82,7 @@ function OverallUserAgentComparison() {
             },
             xAxis: {
               type: "value",
-              name: "Number requests",
+              name: "Number of requests",
               nameLocation: "middle",
               nameGap: 40,
               nameTextStyle: {

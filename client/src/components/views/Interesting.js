@@ -5,10 +5,10 @@ import UnknownCountries from "../charts/UnknownCountries";
 const Interesting = () => {
   return (
     <>
-      <div style={{ marginBottom: "10px" }}>
+      <div style={{ marginBottom: "20px" }}>
         <TopicIdentification />
       </div>
-      <div style={{ marginBottom: "10px" }}>
+      <div style={{ marginBottom: "20px" }}>
         <UnknownCountries />
       </div>
     </>

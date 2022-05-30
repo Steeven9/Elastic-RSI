@@ -105,9 +105,9 @@ function DayTimesComparison() {
             },
             yAxis: {
               type: "value",
-              name: "Number requests",
+              name: "Number of requests",
               nameLocation: "middle",
-              nameGap: 70,
+              nameGap: 90,
               nameTextStyle: {
                 fontSize: 14,
                 fontWeight: "bolder",

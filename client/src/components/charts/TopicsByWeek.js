@@ -83,7 +83,7 @@ const TopicsByWeek = () => {
           <ReactEcharts
             option={{
               title: {
-                text: "# requests per topic and days of week",
+                text: "Number of requests per topic and weekday",
                 left: "center",
                 top: 20,
               },
@@ -97,15 +97,23 @@ const TopicsByWeek = () => {
               },
               xAxis: {
                 data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                name: "Days of the week",
+                name: "Weekday",
                 nameLocation: "middle",
                 nameGap: "30",
+                nameTextStyle: {
+                  fontSize: 14,
+                  fontWeight: "bolder",
+                },
               },
               yAxis: {
                 type: "value",
-                name: "# of requests",
+                name: "Number of requests",
                 nameLocation: "middle",
                 nameGap: "90",
+                nameTextStyle: {
+                  fontSize: 14,
+                  fontWeight: "bolder",
+                },
               },
               series: chartData,
             }}
