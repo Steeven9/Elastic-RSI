@@ -17,6 +17,18 @@ function mapHourToDayTime(hour) {
   }
 }
 
+function mapDayTimeToTimeRange(dayTime) {
+  if (dayTime === "morning") {
+    return "06:00 - 12:00";
+  } else if (dayTime === "afternoon") {
+    return "12:00 - 18:00";
+  } else if (dayTime === "evening") {
+    return "18:00 - 00:00";
+  } else {
+    return "00:00 - 06:00";
+  }
+}
+
 function mapDateToDayTime(date) {
   return mapHourToDayTime(date.getHours());
 }
@@ -118,7 +130,9 @@ function DayTimesComparison() {
                 type: "bar",
                 tooltip: {
                   formatter: (params) =>
-                    `Number requests: ${params.value} </br>Day time: ${params.name}`,
+                    `Number of requests: ${params.value} </br>Day time: ${
+                      params.name
+                    } </br>Time range: ${mapDayTimeToTimeRange(params.name)}`,
                   extraCssText: "box-shadow: 0 0 0 rgba(0, 0, 0, 0);",
                 },
                 data: data.map((e) => e.y),
