@@ -17,6 +17,7 @@ const DeviceDayComparison = () => {
   const [data, setData] = useState(undefined);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
+  const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
 
   const fetchData = async () => {
     let result = new Array(getDevices().length);
@@ -26,20 +27,21 @@ const DeviceDayComparison = () => {
           {
             country: countryFilter,
             admin1: regionFilter,
+            topics: topicFilter,
             user_agent: [device],
           },
           {
             aggs: {
               by_hour: {
                 date_histogram: {
-                  field: "ch_date",
+                  field: "local_date",
                   calendar_interval: "hour",
                 },
               },
             },
             sort: [
               {
-                ch_date: {
+                local_date: {
                   order: "asc",
                 },
               },
@@ -77,7 +79,7 @@ const DeviceDayComparison = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countryFilter, regionFilter]);
+  }, [countryFilter, regionFilter, topicFilter]);
 
   return (
     <div
@@ -106,7 +108,7 @@ const DeviceDayComparison = () => {
               trigger: "item",
             },
             xAxis: {
-              name: "Day time",
+              name: "Local day time",
               nameLocation: "middle",
               nameGap: 30,
               nameTextStyle: {

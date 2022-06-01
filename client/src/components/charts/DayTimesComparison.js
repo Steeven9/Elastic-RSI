@@ -52,12 +52,12 @@ function DayTimesComparison() {
         aggs: {
           by_hour: {
             date_histogram: {
-              field: "ch_date",
+              field: "local_date",
               calendar_interval: "hour",
             },
           },
         },
-        sort: [{ ch_date: { order: "asc" } }],
+        sort: [{ local_date: { order: "asc" } }],
       }
     );
 
@@ -85,8 +85,11 @@ function DayTimesComparison() {
     setData(result);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => filter(), [countryFilter, regionFilter]);
+  useEffect(
+    () => filter(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [countryFilter, regionFilter, topicFilter, deviceFilter]
+  );
 
   return (
     <Fragment>
@@ -105,7 +108,7 @@ function DayTimesComparison() {
               trigger: "item",
             },
             xAxis: {
-              name: "Day time",
+              name: "Local day time",
               nameLocation: "middle",
               nameGap: 30,
               nameTextStyle: {

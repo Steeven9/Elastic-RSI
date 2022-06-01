@@ -38,21 +38,21 @@ const WeekDayComparison = () => {
       {
         country: countryFilter,
         admin1: regionFilter,
-        topic: topicFilter,
+        topics: topicFilter,
         user_agent: deviceFilter,
       },
       {
         aggs: {
           by_hour: {
             date_histogram: {
-              field: "ch_date",
+              field: "local_date",
               calendar_interval: "hour",
             },
           },
         },
         sort: [
           {
-            ch_date: {
+            local_date: {
               order: "asc",
             },
           },
@@ -153,8 +153,11 @@ const WeekDayComparison = () => {
     setOption(option);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => getData(), [countryFilter, regionFilter]);
+  useEffect(
+    () => getData(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [countryFilter, regionFilter, topicFilter, deviceFilter]
+  );
 
   return (
     <div
