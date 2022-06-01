@@ -87,7 +87,11 @@ const TopicsByWeek = () => {
         data: data,
         tooltip: {
           formatter: (params) =>
-            `Topic: ${params.seriesName} </br>Number of requests: ${params.value.toFixed(1)} </br>Day: ${mapLabelsToFullNames(params.name)} `,
+            `Topic: ${
+              params.seriesName
+            } </br>Number of requests: ${params.value.toFixed(
+              1
+            )} </br>Day: ${mapLabelsToFullNames(params.name)} `,
           extraCssText: "box-shadow: 0 0 0 rgba(0, 0, 0, 0);",
         },
       };
