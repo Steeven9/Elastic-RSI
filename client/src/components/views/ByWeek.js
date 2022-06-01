@@ -23,27 +23,3 @@ const ByWeek = () => {
   );
 };
 export default ByWeek;
-
-/**
- 
-    <div
-        style={{
-          display: "grid",
-          gridTemplateAreas: `'chart1 table' 'chart2 table`,
-          gridTemplateColumns: "75% 25%",
-        }}
-      >
-        <div style={{ gridArea: "chart1" }}>
-          <CountsPerDayOfWeek />
-        </div>
-        <div style={{ gridArea: "chart2" }}>
-          <TopicsByWeek />
-        </div>
-        <div style={{ gridArea: "table" }}>
-          <WeekDayCounts />
-        </div>
-      </div>
-      <WeekDayComparison />
-    </>
-
- */
