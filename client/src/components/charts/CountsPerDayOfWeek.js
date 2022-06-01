@@ -2,6 +2,7 @@ import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
+import getDayOfWeekCount from "../../utils/dayOfWeekCount";
 import buildQuery from "../../utils/query";
 
 function mapLabelsToFullNames(label) {
@@ -25,13 +26,20 @@ function getLabels() {
 }
 
 const CountsPerDayOfWeek = () => {
-  const [chartData, setdata] = useState([]);
+  const [chartData, setData] = useState([]);
   const countryFilter = useSelector((st) => st.generalReducer.countryFilter);
   const regionFilter = useSelector((st) => st.generalReducer.regionFilter);
   const topicFilter = useSelector((st) => st.generalReducer.topicFilter);
   const deviceFilter = useSelector((st) => st.generalReducer.deviceFilter);
 
   const getQuery = async () => {
+    const daysCount = await getDayOfWeekCount(
+      countryFilter,
+      regionFilter,
+      topicFilter,
+      deviceFilter
+    );
+
     const query = buildQuery(
       {
         country: countryFilter,
@@ -62,9 +70,9 @@ const CountsPerDayOfWeek = () => {
     const resAgg = res.aggregations.daysOfWeek.buckets;
 
     const resArray = Object.keys(resAgg).map((key) => {
-      return resAgg[key].doc_count;
+      return resAgg[key].doc_count / daysCount[key - 1];
     });
-    setdata(resArray);
+    setData(resArray);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

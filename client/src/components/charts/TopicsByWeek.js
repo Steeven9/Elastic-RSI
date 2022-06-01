@@ -2,6 +2,7 @@ import ReactEcharts from "echarts-for-react";
 import { React, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getWithQuery } from "../../API";
+import getDayOfWeekCount from "../../utils/dayOfWeekCount";
 import buildQuery from "../../utils/query";
 
 function mapLabelsToFullNames(label) {
@@ -37,6 +38,12 @@ const TopicsByWeek = () => {
       queryTopics[topic] = { match: { topics: topic } };
     });
 
+    const daysCount = await getDayOfWeekCount(
+      countryFilter,
+      regionFilter,
+      topicFilter,
+      deviceFilter
+    );
     const query = buildQuery(
       {
         country: countryFilter,
@@ -74,7 +81,9 @@ const TopicsByWeek = () => {
 
     const resArray = Object.keys(resAgg).map((topic) => {
       const data = Object.keys(resAgg[topic].daysOfWeek.buckets).map((day) => {
-        return resAgg[topic].daysOfWeek.buckets[day].doc_count;
+        return (
+          resAgg[topic].daysOfWeek.buckets[day].doc_count / daysCount[day - 1]
+        );
       });
 
       return {

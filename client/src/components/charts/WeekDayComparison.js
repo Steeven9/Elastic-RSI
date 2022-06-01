@@ -76,7 +76,7 @@ const WeekDayComparison = () => {
         hourIndex = (hourIndex + 1) % (7 * 24);
       }
       for (let i = 0; i < hourCounter.length; i++) {
-        values[i] = values[i] / hourCounter[i];
+        values[i] /= hourCounter[i];
       }
     }
     const option = {
