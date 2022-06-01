@@ -65,7 +65,7 @@ function TopicIdentification() {
               {100 * (data.identified / data.total).toFixed(3)} %)
             </Typography>
             <Typography color="gray">
-              topics identified in requests to path /g/[ID]
+              Topics identified in requests to path /g/[ID]
             </Typography>
           </CardContent>
         </Card>

@@ -62,7 +62,7 @@ function UnknownCountries() {
               {100 * (data.unknown / data.total).toFixed(3)} %)
             </Typography>
             <Typography color="gray">
-              requests from unknown countries
+              Requests from unknown countries
             </Typography>
           </CardContent>
         </Card>
