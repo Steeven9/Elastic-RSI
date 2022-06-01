@@ -88,7 +88,7 @@ const WeekDayCounts = () => {
             <TableHead>
               <TableRow>
                 <TableCell>
-                  <b>Week day</b>
+                  <b>Weekday</b>
                 </TableCell>
                 <TableCell align="left">
                   <b>Number occurrences</b>

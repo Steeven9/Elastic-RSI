@@ -4,6 +4,8 @@
 # Usage:
 # ./ingestData.sh <elastic_index>
 
+source ./exportEnv.sh
+
 # Cleanup
 if [ -f error.log ]; then
     rm error.log

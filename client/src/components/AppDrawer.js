@@ -32,11 +32,11 @@ const AppDrawer = () => {
     { name: "Switzerland Map", key: "switzerland" },
     { name: "General Views", key: "general" },
     {
-      name: "By Week",
+      name: "Weekday Comparison",
       key: "byWeek",
     },
     {
-      name: "By Day",
+      name: "Day Time Comparison",
       key: "byDay",
     },
     {

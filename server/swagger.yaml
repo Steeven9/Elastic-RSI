@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   version: 0.1.0
-  title: Elastic-RSI
+  title: ElasticRSI
   description: RSI web application
 
 servers:
